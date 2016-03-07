@@ -4,6 +4,11 @@ library(RMySQL)
 library(data.table)
 library(reshape2) # for melt and cast
 library(randomForest)
+library(pmml)
+
+# library(pROC)
+# library(ROCR)
+library(PRROC)
 # Jimu data queries
 drv <- dbDriver("MySQL")
 con <- dbConnect(drv, user="dumiao_analysis", password="analysis4321",
