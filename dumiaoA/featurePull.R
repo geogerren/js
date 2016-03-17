@@ -1,3 +1,4 @@
+source("~/jimu/sourceFile.R")
 features<-ruleq("select 
 *
 from t_mod_score 
@@ -6,9 +7,10 @@ where service_id='b6bb783a-7d3e-11e5-9036-f8bc124a543b'")
 
 featureGen(features, 10002, 1000001, "age")
 featureGen(features, 10002, 1000002, "idcardno")
-featureGen(features, 10002, 1000003, "cellphoneInService")
 featureGen(features, 10002, 1000002.2, "overdueLoansNum")
-featureGen(features, 10002, 1000002.2, "dumiaoOverdueLoansDays")
+featureGen(features, 10002, 1000002.2, "dumiaoOverdueLoansDays", 2)
+featureGen(features, 10002, 1000003, "cellphoneInService")
+featureGen(features, 10002, 1000003, "caller", 2)
 
 featureGen(features, 10004, 1000005.1, "ecpNum")
 featureGen(features, 10004, 1000005.1, "mateNum")

@@ -9,7 +9,21 @@ colonParser <- function(obj, targetText) {
   return(substr(sub,positionStart,positionEnd))
 }
 
-featureGen <- function(DT, modid, indexid, targetText) {
-  DT[mod_id==modid&index_id==indexid, key:=targetText]
-  DT[mod_id==modid&index_id==indexid, value:=colonParser(input_val, targetText)]
+featureGen <- function(DT, modid, indexid, targetText, seqParam=1) {
+  if(seqParam==1){
+    DT[mod_id==modid&index_id==indexid, key:=targetText]
+    DT[mod_id==modid&index_id==indexid, value:=colonParser(input_val, targetText)]
+    DT[mod_id==modid&index_id==indexid, seq:=seqParam]
+  }else{
+    mid<-DT[mod_id==modid&index_id==indexid&seq==1,]
+    mid[, seq:=seqParam]
+    mid[, key:=targetText]
+    mid[, value:=colonParser(input_val, targetText)]
+    DT<-rbind(DT, mid)
+  }
 }
+
+featureView <- function(DT, modid, indexid) {
+  return(DT[mod_id==modid&index_id==indexid, ])
+}
+
