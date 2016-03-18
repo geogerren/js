@@ -1,27 +1,35 @@
 source("~/jimu/sourceFile.R")
 features<-ruleq("select 
-*
-from t_mod_score 
-where service_id='b6bb783a-7d3e-11e5-9036-f8bc124a543b'")
+p.financingprojectid, 
+t.mod_id,
+t.index_id,
+t.rule_id,
+t.input_val
+from t_mod_score t
+join project_detail p
+on t.service_id = p.service_id
+")
 
 
 featureGen(features, 10002, 1000001, "age")
-featureGen(features, 10002, 1000002, "idcardno")
+# featureGen(features, 10002, 1000002, "idcardno")
 featureGen(features, 10002, 1000002.2, "overdueLoansNum")
 featureGen(features, 10002, 1000002.2, "dumiaoOverdueLoansDays", 2)
 featureGen(features, 10002, 1000003, "cellphoneInService")
-featureGen(features, 10002, 1000003, "caller", 2)
+# featureGen(features, 10002, 1000003, "caller", 2)
 
 featureGen(features, 10004, 1000005.1, "ecpNum")
-featureGen(features, 10004, 1000005.1, "mateNum")
+featureGen(features, 10004, 1000005.1, "mateNum", 2)
 featureGen(features, 10004, 1000005.2, "mobile_encrypt")
-featureGen(features, 10004, 1000005.2, "custName")
-featureGen(features, 10004, 1000005.2, "ecpCellphone_encrypt")
-featureGen(features, 10004, 1000005.2, "ecpRealName")
+# featureGen(features, 10004, 1000005.2, "custName", 2)
+# featureGen(features, 10004, 1000005.2, "ecpCellphone_encrypt", 2)
+# featureGen(features, 10004, 1000005.2, "ecpRealName", 3)
 featureGen(features, 10004, 1000005.3, "addrUsedNum")
 featureGen(features, 10004, 1000006, "ipUsedNum")
-featureGen(features, 10004, 1000006, "userIP")
+featureGen(features, 10004, 1000006, "userIP", 2)
 featureGen(features, 10004, 1000007, "browserUsedNum")
+featureGen(features, 10004, 1000007.1, "ecp_eachother")
+featureGen(features, 10004, 1000007.2, "unexpectedApplyTime")
 
 featureGen(features, 10005, 1000008, "workCondition")
 featureGen(features, 10006, 1000010, "cityInService")
@@ -54,6 +62,10 @@ featureGen(features, 10010, 1000025, "loansCalls1")
 
 featureGen(features, 10013, 1000026.0, "blankDecision")
 featureGen(features, 10013, 1000026.0, "blanksScore")
+featureGen(features, 10013, "1000026.0.1", "tongdunIdMultiLoanNum")
+featureGen(features, 10013, "1000026.0.1", "tongdunPhoneMultiLoanNum", 2)
+featureGen(features, 10013, "1000026.0.2", "tongdunIdDiscredit")
+featureGen(features, 10013, "1000026.0.2", "tongdunPhoneDiscredit", 2)
 featureGen(features, 10013, 1000026.1, "cellphoneAuth")
 featureGen(features, 10013, 1000026.1, "unionpayNameCardCheck")
 featureGen(features, 10013, 1000026.1, "unionpayIdCardNameCheck")
@@ -67,20 +79,22 @@ featureGen(features, 10013, 1000028, "useCardPM")
 featureGen(features, 10013, 1000029, "post6MonthOverdrawNum")
 featureGen(features, 10013, 1000029, "lastMonthOverdrawNum")
 featureGen(features, 10013, 1000030, "useCardSumRank")
-featureGen(features, 10013, 1000030, "useCardAmountAvg")
+features<-featureGen(features, 10013, 1000030, "useCardAmountAvg", 2)
 featureGen(features, 10013, 1000030.2, "hightRiskTransAvg1")
 featureGen(features, 10013, 1000030.2, "hightRiskTransNum1")
 
 featureGen(features, 10016, 1000032, "sex")
 featureGen(features, 10016, 1000033, "age")
 featureGen(features, 10016, 1000034, "marry")
-featureGen(features, 10016, 1000034, "childrenNum")
+features<-featureGen(features, 10016, 1000034, "childrenNum", 2)
 featureGen(features, 10016, 1000035, "local1year")
+featureGen(features, 10016, 1000036.1, "localFriends")
+featureGen(features, 10016, 1000036.2, "longTimeShutdown")
+
+
 featureGen(features, 10016, 1000035, "postConsume02")
 featureGen(features, 10016, 1000035, "postConsume24")
 featureGen(features, 10016, 1000035, "postConsume46")
-featureGen(features, 10016, 1000036.1, "localFriends")
-featureGen(features, 10016, 1000036.2, "GuanjiTime")
 featureGen(features, 10016, 1000036.3, "Job")
 featureGen(features, 10016, 1000036.4, "Ecp")
 featureGen(features, 10016, 1000036.4, "tachEcp")
@@ -128,7 +142,7 @@ featureGen(features, 10019, 1000059, "loansCalls3")
 featureGen(features, 10019, 1000059, "loansCalls1")
 featureGen(features, 10019, 1000059, "juxinliSuccess")
 
-featureGen(features, 10000, 1000031.2, "finalScore")
-featureGen(features, 10000, 1000031.5, "creditLineDB")
-featureGen(features, 10000, 1000031.5, "applyMonthsMax")
+# featureGen(features, 10000, 1000031.2, "finalScore")
+# featureGen(features, 10000, 1000031.5, "creditLineDB")
+# featureGen(features, 10000, 1000031.5, "applyMonthsMax")
 
