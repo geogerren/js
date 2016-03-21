@@ -1,8 +1,8 @@
 # source("~/jimu/sourceFile.R")
-box <- "E:/BaiduDropbox/jimu/"
+box <- "E:/Seafiles/Jimu/adhoc/"
 library(RMySQL)
 library(data.table)
-library(reshape2) # for melt and cast
+# library(reshape2) # for melt and cast
 library(randomForest)
 library(pmml)
 library(stringr)

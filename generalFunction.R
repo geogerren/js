@@ -25,6 +25,27 @@ featureGen <- function(DT, modid, indexid, targetText, seqParam=1) {
   }
 }
 
+############## Value Infer 三重奏
+viewAllValues <- function(DT, column){
+  result<-table(DT[, column, with=F], useNA = "always")
+  result<-data.table(result)
+  View(result)
+}
+
+isAlphaNum <- Vectorize(function(str){
+  result<-ifelse(length(charToRaw(substr(str, 1, 1)))==1, 1, 0)
+  return(result)
+})
+
+naBlankInfer <- function(DT, column, inferFrom=c(NA, 'None', ''), inferTo=0){
+  DT[get(column) %in% inferFrom, column:=as.character(inferTo), with=F]
+}
+################################
+
+# 拉平data.table 
+# test<-dcast.data.table(DT, mainID(用来left join的那个) ~ 变量名, fun.agg=max, value.var = "变量值")
+
+
 # featureAnalysis <- function(DT) {
 #   oneVariable<-DT[, 1, with=F]
 #   result<-data.table(names(oneVariable), typeof(unlist(oneVariable[1])),

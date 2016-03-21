@@ -1,4 +1,4 @@
-ods<-read.csv("E:/BaiduDropbox/jimu/Data/ods_drawdown_loans.csv", stringsAsFactors = F)
+ods<-read.csv("E:/Seafiles/Jimu/Data/ods_drawdown_loans.csv", stringsAsFactors = F)
 ods<-data.table(ods)
 ods[, Loan_Date:=as.Date(Loan_Date)]
 ods[, statc_dt:=as.Date(statc_dt)]
