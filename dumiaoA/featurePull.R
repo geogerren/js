@@ -1,4 +1,5 @@
 source("~/jimu/sourceFile.R")
+source("~/jimu/generalFunction.R")
 features<-ruleq("select 
 p.financingprojectid, 
 t.mod_id,
@@ -142,7 +143,238 @@ features<-featureGen(features, 10019, 1000059, "juxinliSuccess", 3)
 
 
 ##################################################################################
-features[value=='',]
+featuresWide<-dcast.data.table(features, financingprojectid ~ key, fun.agg=max, value.var = "value")
+featuresWide<-merge(featuresWide, target[, c("project_id","Loan_Date","tenor","flgDPD","flgTest"), with=F], by.x="financingprojectid", by.y="project_id")
+# 去除182个大面积缺失的样本
+featuresWide<-featuresWide[!is.na(zhiceCar),]
 
 
+viewAllValues(featuresWide, 1)
+viewAllValues(featuresWide, 2)
+viewAllValues(featuresWide, 3)
 
+viewAllValues(featuresWide, 4)
+naBlankInfer(featuresWide, "amuseConsumeFreq", c(NA, '0.0'), 0)
+
+# Note: can't determine what -1 means. 
+viewAllValues(featuresWide, 5)
+naBlankInfer(featuresWide, "applicantContact", inferTo=0)
+
+viewAllValues(featuresWide, 6)
+naBlankInfer(featuresWide, "avgMonthCall", inferTo=0)
+
+# seems duplicate of avgMonthCall
+viewAllValues(featuresWide, 7)
+featuresWide[, avgMonthCallTime:=NULL] 
+
+viewAllValues(featuresWide, 7)
+
+viewAllValues(featuresWide, 8)         
+
+viewAllValues(featuresWide, 9)
+naBlankInfer(featuresWide, "callEcpNum", inferTo=0)
+
+# Note: can't determine what -1 means. 
+viewAllValues(featuresWide, 10)
+
+# all 0 or NA
+viewAllValues(featuresWide, 11)
+featuresWide[, callNetLoanBlank:=NULL]
+
+viewAllValues(featuresWide, 12)
+naBlankInfer(featuresWide, "carConsume4sSum", inferTo=0)
+
+viewAllValues(featuresWide, 13)
+naBlankInfer(featuresWide, "carConsume5Freq", inferTo=0)
+
+viewAllValues(featuresWide, 14)
+naBlankInfer(featuresWide, "carConsume7Sum", inferTo=0)
+
+viewAllValues(featuresWide, 15)
+naBlankInfer(featuresWide, "carConsumeFreq", inferTo=0)
+
+viewAllValues(featuresWide, 16)
+naBlankInfer(featuresWide, "carConsumePart5Freq", inferTo=0)
+
+# no info provided
+# 02: 1237, 03:1, NA:182
+viewAllValues(featuresWide, 17)
+featuresWide[, cardClass:=NULL]
+
+viewAllValues(featuresWide, 17)
+naBlankInfer(featuresWide, "cardTerm", NA, -1)
+
+viewAllValues(featuresWide, 18)
+naBlankInfer(featuresWide, "cardType", c("白金卡","钛金卡"), 5)
+naBlankInfer(featuresWide, "cardType", NA, -1)
+
+viewAllValues(featuresWide, 19)
+naBlankInfer(featuresWide, "cellphoneAuth", NA, 0)
+
+viewAllValues(featuresWide, 20)
+viewAllValues(featuresWide, 21)
+viewAllValues(featuresWide, 22)
+viewAllValues(featuresWide, 23)
+viewAllValues(featuresWide, 24)
+viewAllValues(featuresWide, 25)
+viewAllValues(featuresWide, 26)
+naBlankInfer(featuresWide, "creditWD3Months", NA, 0)
+
+viewAllValues(featuresWide, 27)
+naBlankInfer(featuresWide, "creditWDAvg", NA, 0)
+
+viewAllValues(featuresWide, 28)
+naBlankInfer(featuresWide, "creditWDFreq", NA, 0)
+
+viewAllValues(featuresWide, 29)
+viewAllValues(featuresWide, 30)
+viewAllValues(featuresWide, 31)
+
+# no info provided
+viewAllValues(featuresWide, 32)
+# 0:1080 未知:1 NA:157
+featuresWide[, ecpPhoneTag:=NULL]
+
+# no info provided
+viewAllValues(featuresWide, 32)
+# 0:31 NA:1207
+featuresWide[, ecp_eachother:=NULL]
+
+viewAllValues(featuresWide, 32)
+naBlankInfer(featuresWide, "goOut120", NA, 0)
+
+# no info provided
+viewAllValues(featuresWide, 33)
+# NA:93 0:rest
+featuresWide[, hightRiskTransAvg1:=NULL]
+
+viewAllValues(featuresWide, 33)
+naBlankInfer(featuresWide, "hightRiskTransAvg6", NA, 0)
+
+# no info provided
+viewAllValues(featuresWide, 34)
+# NA:93 1:1 0:rest
+featuresWide[, hightRiskTransNum1:=NULL]
+
+viewAllValues(featuresWide, 34)
+naBlankInfer(featuresWide, "hightRiskTransNum6", NA, 0)
+
+# all 0
+viewAllValues(featuresWide, 35)
+featuresWide[, inBlanklist:=NULL]
+
+# all 0 or NULL
+viewAllValues(featuresWide, 35)
+featuresWide[, inJulixinBlanklist:=NULL]
+
+# all 0 or F
+viewAllValues(featuresWide, 35)
+featuresWide[, inZhimaBlank:=NULL]
+
+viewAllValues(featuresWide, 35)
+viewAllValues(featuresWide, 36)
+naBlankInfer(featuresWide, "juxinliSuccess", NA, 0)
+
+viewAllValues(featuresWide, 37)
+naBlankInfer(featuresWide, "lastMonthOverdrawNum", NA, 0)
+
+viewAllValues(featuresWide, 38)
+naBlankInfer(featuresWide, "loansCalls1", NA, 0)
+
+viewAllValues(featuresWide, 39)
+naBlankInfer(featuresWide, "loansCalls3", NA, 0)
+
+viewAllValues(featuresWide, 40)
+viewAllValues(featuresWide, 41)
+viewAllValues(featuresWide, 42)
+viewAllValues(featuresWide, 43)
+
+# all 0
+viewAllValues(featuresWide, 44)
+featuresWide[, mateNum:=NULL]
+
+viewAllValues(featuresWide, 44)
+viewAllValues(featuresWide, 45)
+viewAllValues(featuresWide, 46)
+
+viewAllValues(featuresWide, 47)
+median(as.numeric(featuresWide[flgTest==0,]$networkTime6), na.rm=T)
+featuresWide[flgTest==0 & is.na(networkTime6), networkTime6:="645"]
+median(as.numeric(featuresWide[flgTest==1,]$networkTime6), na.rm=T)
+featuresWide[flgTest==1 & is.na(networkTime6), networkTime6:="797"]
+
+viewAllValues(featuresWide, 48)
+
+viewAllValues(featuresWide, 49)
+naBlankInfer(featuresWide, "noNeedMobileAuthCheck", NA, 0)
+
+viewAllValues(featuresWide, 50)
+naBlankInfer(featuresWide, "normalContact", NA, -1)
+
+# no info provided
+viewAllValues(featuresWide, 51)
+# 918:1 0:rest
+featuresWide[, post12PMFeeAmount:=NULL]
+
+viewAllValues(featuresWide, 51)
+featuresWide[, post12PMFeeNum:=NULL]
+
+viewAllValues(featuresWide, 51)
+naBlankInfer(featuresWide, "post6MonthOverdrawNum", NA, 0)
+
+viewAllValues(featuresWide, 52)
+viewAllValues(featuresWide, 53)
+viewAllValues(featuresWide, 54)
+
+viewAllValues(featuresWide, 55)
+naBlankInfer(featuresWide, "sex", "M", 1)
+naBlankInfer(featuresWide, "sex", "F", 0)
+
+viewAllValues(featuresWide, 56)
+naBlankInfer(featuresWide, "tachEcp", NA, 0)
+
+viewAllValues(featuresWide, 57)
+naBlankInfer(featuresWide, "thisCityIsTop3", NA, -1)
+
+# all NA
+viewAllValues(featuresWide, 58)
+featuresWide[,tongdunIdDiscredit:=NULL]
+
+viewAllValues(featuresWide, 58)
+featuresWide[,tongdunIdMultiLoanNum:=NULL]
+
+viewAllValues(featuresWide, 58)
+featuresWide[,tongdunPhoneDiscredit:=NULL]
+
+viewAllValues(featuresWide, 58)
+featuresWide[,tongdunPhoneMultiLoanNum:=NULL]
+
+viewAllValues(featuresWide, 58)
+naBlankInfer(featuresWide, "transFalsePast6", NA, 0)
+
+viewAllValues(featuresWide, 59)
+naBlankInfer(featuresWide, "transFalsePastMonth", NA, 0)
+
+viewAllValues(featuresWide, 60)
+viewAllValues(featuresWide, 61)
+
+# all 0 or NA
+viewAllValues(featuresWide, 62)
+featuresWide[, unexpectedApplyTime:=NULL]
+
+viewAllValues(featuresWide, 62)
+viewAllValues(featuresWide, 63)
+naBlankInfer(featuresWide, "unionpayHouse", "True", 1)
+naBlankInfer(featuresWide, "unionpayHouse", "False", 0)
+
+# 1:1 NA:1237
+viewAllValues(featuresWide, 64)
+featuresWide[, unionpayIdCardNameCheck:=NULL]
+
+viewAllValues(featuresWide, 64)
+featuresWide[, unionpayMobileCardCheck:=NULL]
+
+viewAllValues(featuresWide, 64)
+featuresWide[, unionpayNameCardCheck:=NULL]
+
+viewAllValues(featuresWide, 64)

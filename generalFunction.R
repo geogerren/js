@@ -27,8 +27,9 @@ featureGen <- function(DT, modid, indexid, targetText, seqParam=1) {
 
 ############## Value Infer 三重奏
 viewAllValues <- function(DT, column){
-  result<-table(DT[, column, with=F], useNA = "always")
+  result<-table(DT[, column, with=F], useNA = "ifany")
   result<-data.table(result)
+  setnames(result, "V1", names(DT[, column, with=F]))
   View(result)
 }
 
@@ -41,6 +42,10 @@ naBlankInfer <- function(DT, column, inferFrom=c(NA, 'None', ''), inferTo=0){
   DT[get(column) %in% inferFrom, column:=as.character(inferTo), with=F]
 }
 ################################
+banding <- function(DT, columnValue, columnBand, bands=seq(0, 1, 0.1)){
+  DT[, eval(columnBand):=as.integer(cut(get(columnValue), quantile(get(columnValue), probs=bands, na.rm=T), include.lowest=TRUE))]
+}
+
 
 # 拉平data.table 
 # test<-dcast.data.table(DT, mainID(用来left join的那个) ~ 变量名, fun.agg=max, value.var = "变量值")
