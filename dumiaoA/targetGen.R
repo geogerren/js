@@ -2,7 +2,7 @@ ods<-read.csv("E:/Seafiles/Jimu/Data/ods_drawdown_loans.csv", stringsAsFactors =
 ods<-data.table(ods)
 ods[, Loan_Date:=as.Date(Loan_Date)]
 ods[, statc_dt:=as.Date(statc_dt)]
-# ods<-ods[!(Loan_Date>='2015-11-03'&Loan_Date<='2015-11-30'), ]
+ods<-ods[!(Loan_Date>='2015-11-03'&Loan_Date<='2015-11-30'), ]
 
 # 15 days DQ in 90 days 
 # tenor>=3要求至少90天performance

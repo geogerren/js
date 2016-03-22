@@ -2,6 +2,8 @@ monthDiff <- Vectorize(function(startMth, endMth){
   return((as.numeric(substr(endMth,1,4))-as.numeric(substr(startMth,1,4)))*12+(as.numeric(substr(endMth,5,6))-as.numeric(substr(startMth,5,6))))
 })
 
+############## Parse 二人转
+# Parse targetText:Value(<>) type of strings
 colonParser <- Vectorize(function(obj, targetText) {
   sub<-str_extract(obj, paste0(targetText, ".*<"))
   positionStart<-str_locate(sub, ":")[1]+1
@@ -9,6 +11,7 @@ colonParser <- Vectorize(function(obj, targetText) {
   return(substr(sub,positionStart,positionEnd))
 })
 
+# Generate features from t_mod_score
 featureGen <- function(DT, modid, indexid, targetText, seqParam=1) {
   if(seqParam==1){
     DT[mod_id==modid&index_id==indexid, key:=targetText]
@@ -25,7 +28,9 @@ featureGen <- function(DT, modid, indexid, targetText, seqParam=1) {
   }
 }
 
+
 ############## Value Infer 三重奏
+# table()的GUI版本
 viewAllValues <- function(DT, column){
   result<-table(DT[, column, with=F], useNA = "ifany")
   result<-data.table(result)
@@ -33,15 +38,19 @@ viewAllValues <- function(DT, column){
   View(result)
 }
 
+# 判断是否alpha-numeric，不是的话就是中文字符
 isAlphaNum <- Vectorize(function(str){
   result<-ifelse(length(charToRaw(substr(str, 1, 1)))==1, 1, 0)
   return(result)
 })
 
+# 把NA什么的替换成0或者你想要的
 naBlankInfer <- function(DT, column, inferFrom=c(NA, 'None', ''), inferTo=0){
   DT[get(column) %in% inferFrom, column:=as.character(inferTo), with=F]
 }
-################################
+
+
+# 造个scoreband放在新的column里
 banding <- function(DT, columnValue, columnBand, bands=seq(0, 1, 0.1)){
   DT[, eval(columnBand):=as.integer(cut(get(columnValue), quantile(get(columnValue), probs=bands, na.rm=T), include.lowest=TRUE))]
 }
@@ -49,6 +58,7 @@ banding <- function(DT, columnValue, columnBand, bands=seq(0, 1, 0.1)){
 # 拉平data.table 
 # test<-dcast.data.table(DT, mainID(用来left join的那个) ~ 变量名, fun.agg=max, value.var = "变量值")
 
+# 把features的min/max/percentile/Nmiss etc.做成一个data.frame
 featureAnalysis <- function(DT, exclude, cateConv=F) {
   result <- data.frame(VarName=character(),
                    sType=character(),
@@ -57,13 +67,13 @@ featureAnalysis <- function(DT, exclude, cateConv=F) {
                    MissPctg=integer(),
                    Mean=double(),
                    Stdev=double(),
-                   Max=double(),
                    Min=double(),
+                   Median=double(),
+                   Max=double(),
                    P01=double(),
                    P05=double(),
                    P10=double(),
                    P25=double(),
-                   Median=double(),
                    P75=double(),
                    P90=double(),
                    P95=double(),
@@ -102,6 +112,8 @@ featureAnalysis <- function(DT, exclude, cateConv=F) {
       result<-rbind(result, newRow)
     }
   }
+  names(result)<-c("VarName","sType","N","Nmiss","MissPctg","Mean","Stdev",
+                   "Min","Median","Max","P01","P05","P10","P25","P75","P90","P95","P99")
   return(result)
 }
 

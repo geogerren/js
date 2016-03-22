@@ -145,8 +145,6 @@ features<-featureGen(features, 10019, 1000059, "juxinliSuccess", 3)
 ##################################################################################
 featuresWide<-dcast.data.table(features, financingprojectid ~ key, fun.agg=max, value.var = "value")
 featuresWide<-merge(featuresWide, target[, c("project_id","Loan_Date","tenor","flgDPD","flgTest"), with=F], by.x="financingprojectid", by.y="project_id")
-# 去除182个大面积缺失的样本
-featuresWide<-featuresWide[!is.na(zhiceCar),]
 
 
 viewAllValues(featuresWide, 1)
