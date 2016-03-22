@@ -11,6 +11,8 @@ join project_detail p
 on t.service_id = p.service_id
 ")
 
+########################################################################################
+# Pull出已有的变量
 
 featureGen(features, 10004, 1000005.1, "ecpNum")
 features<-featureGen(features, 10004, 1000005.1, "mateNum", 2)
@@ -143,8 +145,35 @@ features<-featureGen(features, 10019, 1000059, "juxinliSuccess", 3)
 
 
 ##################################################################################
+# 加上target
 featuresWide<-dcast.data.table(features, financingprojectid ~ key, fun.agg=max, value.var = "value")
 featuresWide<-merge(featuresWide, target[, c("project_id","Loan_Date","tenor","flgDPD","flgTest"), with=F], by.x="financingprojectid", by.y="project_id")
+
+
+
+
+##################################################################################
+# 通过application table, projectdetails table连上邮箱，解析信用卡资料
+
+
+
+
+##################################################################################
+# 通过cust_ser_trans table重建银联变量
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 viewAllValues(featuresWide, 1)

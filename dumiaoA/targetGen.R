@@ -4,6 +4,7 @@ ods[, Loan_Date:=as.Date(Loan_Date)]
 ods[, statc_dt:=as.Date(statc_dt)]
 ods<-ods[!(Loan_Date>='2015-11-03'&Loan_Date<='2015-11-30'), ]
 
+
 # 15 days DQ in 90 days 
 # tenor>=3要求至少90天performance
 ods90DaysPerf<-ods[statc_dt-Loan_Date<=90&tenor>=3, ]
@@ -109,3 +110,19 @@ table(target1$flgDPD)
 
 target<-rbind(target1Final, target2Final, target3Final)
 
+################################################################################
+# 去除失联人员
+lostContact <- read.csv(paste0(boxdata, "lostContact0322.csv"))
+lostContact<-data.table(lostContact)
+mapping <- read.csv(paste0(boxdata, "financings.csv"),stringsAsFactors = F)
+mapping<-data.table(mapping)
+mapping[, borroweruserid:=as.integer(borroweruserid)]
+mapping[, financingprojectid:=as.integer(financingprojectid)]
+lostContact <- merge(lostContact, mapping, by.x="委案编号", by.y="borroweruserid", all.x=T)
+
+
+target[project_id %in% lostContact$financingprojectid, ]
+target[project_id %in% lostContact]
+
+
+target<-target[!(project_id %in% lostContact$financingprojectid & flgDPD==0), ]

@@ -1,6 +1,6 @@
 # source("~/jimu/sourceFile.R")
-adbox <- "E:/Seafiles/Jimu/Data/adhoc/"
-databox <- "E:/Seafiles/Jimu/Data/"
+box <- "E:/Seafiles/Jimu/Data/adhoc/"
+boxdata <- "E:/Seafiles/Jimu/Data/"
 
 library(RMySQL)
 library(data.table)
