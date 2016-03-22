@@ -1,5 +1,7 @@
 # source("~/jimu/sourceFile.R")
-box <- "E:/Seafiles/Jimu/adhoc/"
+adbox <- "E:/Seafiles/Jimu/Data/adhoc/"
+databox <- "E:/Seafiles/Jimu/Data/"
+
 library(RMySQL)
 library(data.table)
 # library(reshape2) # for melt and cast
