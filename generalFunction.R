@@ -46,22 +46,62 @@ banding <- function(DT, columnValue, columnBand, bands=seq(0, 1, 0.1)){
   DT[, eval(columnBand):=as.integer(cut(get(columnValue), quantile(get(columnValue), probs=bands, na.rm=T), include.lowest=TRUE))]
 }
 
-
 # 拉平data.table 
 # test<-dcast.data.table(DT, mainID(用来left join的那个) ~ 变量名, fun.agg=max, value.var = "变量值")
 
+featureAnalysis <- function(DT, exclude, cateConv=F) {
+  result <- data.frame(VarName=character(),
+                   sType=character(),
+                   N=integer(),
+                   Nmiss=integer(),
+                   MissPctg=integer(),
+                   Mean=double(),
+                   Stdev=double(),
+                   Max=double(),
+                   Min=double(),
+                   P01=double(),
+                   P05=double(),
+                   P10=double(),
+                   P25=double(),
+                   Median=double(),
+                   P75=double(),
+                   P90=double(),
+                   P95=double(),
+                   P99=double(),
+                   stringsAsFactors=FALSE)
 
-# featureAnalysis <- function(DT) {
-#   oneVariable<-DT[, 1, with=F]
-#   result<-data.table(names(oneVariable), typeof(unlist(oneVariable[1])),
-#                      nrow(oneVariable), mean(oneVariable), sd(oneVariable)), 
-#                      sum(is.na(oneVariable)), max(oneVariable), min(oneVariable)), 
-#                      quantile(unlist(oneVariable), c(.01)), quantile(unlist(oneVariable), c(.05)),
-#                      quantile(unlist(oneVariable), c(.25)), quantile(unlist(oneVariable), c(.50)),
-#                      quantile(unlist(oneVariable), c(.75)), quantile(unlist(oneVariable), c(.99)))
-#   names(result)<-c("VarName", "Type")
-#   for(i in 2:length(names(DT))){
-#     
-#   }
-# }
+
+  for(varName in names(DT)){
+    if(!(varName %in% exclude)){
+      DT[, varName:=as.numeric(get(varName)), with=F]
+      print(varName)
+      if(cateConv & nrow(as.data.table(table(DT[, varName, with=F],useNA="ifany")))<=10){
+        #如果变量的所有可选值不大于10，可以选择转成categorical，randomForest不用转
+        DT[, varName:=as.factor(get(varName)), with=F]
+      }
+      oneVar<-unlist(DT[, varName, with=F])
+      newRow<-data.frame(varName, 
+                         typeof(oneVar),
+                         length(oneVar), 
+                         length(oneVar[is.na(oneVar)]),
+                         length(oneVar[is.na(oneVar)])/length(oneVar),
+                         mean(oneVar, na.rm = T), 
+                         sd(oneVar, na.rm = T), 
+                         min(oneVar, na.rm = T), 
+                         median(oneVar, na.rm = T), 
+                         max(oneVar, na.rm = T), 
+                         quantile(oneVar, c(.01), na.rm=T),
+                         quantile(oneVar, c(.05), na.rm=T),
+                         quantile(oneVar, c(.10), na.rm=T),
+                         quantile(oneVar, c(.25), na.rm=T),
+                         quantile(oneVar, c(.75), na.rm=T),
+                         quantile(oneVar, c(.90), na.rm=T),
+                         quantile(oneVar, c(.95), na.rm=T),
+                         quantile(oneVar, c(.99), na.rm=T)
+                         )
+      result<-rbind(result, newRow)
+    }
+  }
+  return(result)
+}
 

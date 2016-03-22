@@ -31,9 +31,13 @@ target3Final[(k3+1):nrow(target3Final), flgTest:=1]
 target3Final[, c("DPD8to14in90","DPD15out90","DPD15in90"):=NULL]
 
 table(target3$flgDPD)
+# 不包含11.3-11.30
 # -1   0   1 
 # 52 738 103 
 
+# 包含11.3-11.30
+# -1    0    1 
+# 75 1002  140 
 
 # tenor=2要求至少60天performance
 ods60DaysPerf<-ods[statc_dt-Loan_Date<=60&tenor==2, ]
@@ -61,9 +65,13 @@ target2Final[(k2+1):nrow(target2Final), flgTest:=1]
 target2Final[, c("DPD8to14in60","DPD15out60","DPD15in60"):=NULL]
 
 table(target2$flgDPD)
+# 不包含11.3-11.30
 # 0  1 
 # 30  4 
 
+# 包含11.3-11.30
+# -1  0  1 
+# 2 36  5 
 
 # tenor=1要求至少30天performance
 ods30DaysPerf<-ods[statc_dt-Loan_Date<=30&tenor==1, ]
@@ -91,9 +99,13 @@ target1Final[(k1+1):nrow(target1Final), flgTest:=1]
 target1Final[, c("DPD8to14in30","DPD15out30","DPD15in30"):=NULL]
 
 table(target1$flgDPD)
+# 不包含11.3-11.30
 # -1   0 
 # 17 111 
 
+# 包含11.3-11.30
+# -1   0 
+# 23 137 
 
 target<-rbind(target1Final, target2Final, target3Final)
 
