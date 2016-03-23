@@ -78,7 +78,6 @@ for (folder in folderNames){
     
     newBill<-data.frame(EmailID
       ,BillAcctID
-      ,Name
       ,Cash_Advance_Limit
       ,Credit_Limit
       ,Credit_Line
