@@ -3,26 +3,34 @@ monthDiff <- Vectorize(function(startMth, endMth){
 })
 
 ############## Parse 二人转
-# Parse targetText:Value(<>) type of strings
-colonParser <- Vectorize(function(obj, targetText) {
-  sub<-str_extract(obj, paste0(targetText, ".*<"))
-  positionStart<-str_locate(sub, ":")[1]+1
-  positionEnd<-str_locate(sub, "\\(<")[1]-1
+# Parse strings, default pattern: targetText:Value(<>) 
+# 先用str_extract取targetText之后的一段string，然后用strStart, strEnd截targetText的值
+strParseV <- Vectorize(function(obj, targetText, regexpStopping=".*<", strStart=":", strEnd="\\(") {
+  sub<-str_extract(obj, paste0(targetText, regexpStopping))
+  positionStart<-str_locate(sub, strStart)[1]+nchar(strStart)
+  positionEnd<-str_locate(sub, strEnd)[1]-1
   return(substr(sub,positionStart,positionEnd))
 })
+
+strParse <- function(obj, targetText, regexpStopping=".*<", strStart=":", strEnd="\\(") {
+  sub<-str_extract(obj, paste0(targetText, regexpStopping))
+  positionStart<-str_locate(sub, strStart)[1]+nchar(strStart)
+  positionEnd<-str_locate(sub, strEnd)[1]-1
+  return(substr(sub,positionStart,positionEnd))
+}
 
 # Generate features from t_mod_score
 featureGen <- function(DT, modid, indexid, targetText, seqParam=1) {
   if(seqParam==1){
     DT[mod_id==modid&index_id==indexid, key:=targetText]
-    DT[mod_id==modid&index_id==indexid, value:=colonParser(input_val, targetText)]
+    DT[mod_id==modid&index_id==indexid, value:=strParseV(input_val, targetText)]
     DT[mod_id==modid&index_id==indexid, seq:=seqParam]
     return(DT)
   }else{
     mid<-DT[mod_id==modid&index_id==indexid&seq==1,]
     mid[, seq:=seqParam]
     mid[, key:=targetText]
-    mid[, value:=colonParser(input_val, targetText)]
+    mid[, value:=strParseV(input_val, targetText)]
     DT<-rbind(DT, mid)
     return(DT)
   }
@@ -83,32 +91,57 @@ featureAnalysis <- function(DT, exclude, cateConv=F) {
 
   for(varName in names(DT)){
     if(!(varName %in% exclude)){
-      DT[, varName:=as.numeric(get(varName)), with=F]
+      if(length(table(as.numeric(unlist(DT[, varName, with=F]))))>0){
+        DT[, varName:=as.numeric(get(varName)), with=F]
+      }
       print(varName)
       if(cateConv & nrow(as.data.table(table(DT[, varName, with=F],useNA="ifany")))<=10){
         #如果变量的所有可选值不大于10，可以选择转成categorical，randomForest不用转
         DT[, varName:=as.factor(get(varName)), with=F]
       }
       oneVar<-unlist(DT[, varName, with=F])
-      newRow<-data.frame(varName, 
-                         typeof(oneVar),
-                         length(oneVar), 
-                         length(oneVar[is.na(oneVar)]),
-                         length(oneVar[is.na(oneVar)])/length(oneVar),
-                         mean(oneVar, na.rm = T), 
-                         sd(oneVar, na.rm = T), 
-                         min(oneVar, na.rm = T), 
-                         median(oneVar, na.rm = T), 
-                         max(oneVar, na.rm = T), 
-                         quantile(oneVar, c(.01), na.rm=T),
-                         quantile(oneVar, c(.05), na.rm=T),
-                         quantile(oneVar, c(.10), na.rm=T),
-                         quantile(oneVar, c(.25), na.rm=T),
-                         quantile(oneVar, c(.75), na.rm=T),
-                         quantile(oneVar, c(.90), na.rm=T),
-                         quantile(oneVar, c(.95), na.rm=T),
-                         quantile(oneVar, c(.99), na.rm=T)
-                         )
+      if(typeof(oneVar)=="double"){
+        newRow<-data.frame(varName, 
+                           typeof(oneVar),
+                           length(oneVar), 
+                           length(oneVar[is.na(oneVar)]),
+                           length(oneVar[is.na(oneVar)])/length(oneVar),
+                           mean(oneVar, na.rm = T), 
+                           sd(oneVar, na.rm = T), 
+                           min(oneVar, na.rm = T), 
+                           median(oneVar, na.rm = T), 
+                           max(oneVar, na.rm = T), 
+                           quantile(oneVar, c(.01), na.rm=T),
+                           quantile(oneVar, c(.05), na.rm=T),
+                           quantile(oneVar, c(.10), na.rm=T),
+                           quantile(oneVar, c(.25), na.rm=T),
+                           quantile(oneVar, c(.75), na.rm=T),
+                           quantile(oneVar, c(.90), na.rm=T),
+                           quantile(oneVar, c(.95), na.rm=T),
+                           quantile(oneVar, c(.99), na.rm=T)
+        )
+      }else{
+        newRow<-data.frame(varName, 
+                           typeof(oneVar),
+                           length(oneVar), 
+                           length(oneVar[is.na(oneVar)]),
+                           length(oneVar[is.na(oneVar)])/length(oneVar),
+                           NA, 
+                           NA, 
+                           NA, 
+                           NA, 
+                           NA, 
+                           NA, 
+                           NA, 
+                           NA, 
+                           NA, 
+                           NA, 
+                           NA, 
+                           NA, 
+                           NA 
+        )
+        names(newRow)<-names(result)
+      }
       result<-rbind(result, newRow)
     }
   }
