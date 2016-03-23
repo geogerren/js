@@ -1,4 +1,17 @@
-application <- aeq("select * from ")
+emailProjectidMapping <- aeq("select 
+  pd.financingprojectid,
+  pd.createtime,
+  em.val as email
+  FROM
+  project_detail pd
+  join
+  (
+  select sd.val,service_id 
+  from t_cust_ser_data sd where sd.data_source='jisudai' 
+  and sd.class_1='CCEmailAddress' and is_delete= 0
+  ) em
+  on pd.service_id = em.service_id
+                   ")
 
 
 
