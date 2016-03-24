@@ -104,14 +104,14 @@ features<-featureGen(features, 10018, 1000042, "unionpayHouse", 2) #等价zhiceH
 features<-featureGen(features, 10018, 1000042, "post12PMFeeAmount", 3)
 features<-featureGen(features, 10018, 1000042, "post12PMFeeNum", 4)
 featureGen(features, 10018, 1000043, "zhiceCar")
-features<-featureGen(features, 10018, 1000043, "declareCar", 2) #登记zhiceCar
+features<-featureGen(features, 10018, 1000043, "declareCar", 2) #等价zhiceCar
 
 # t_mod_index里没有这些
-features<-featureGen(features, 10018, 1000043, "carConsumePart5Freq", 3)
-features<-featureGen(features, 10018, 1000043, "carConsume5Freq", 4)
-features<-featureGen(features, 10018, 1000043, "carConsume4sSum", 5)
-features<-featureGen(features, 10018, 1000043, "carConsumeFreq", 6)
-features<-featureGen(features, 10018, 1000043, "carConsume7Sum", 7)
+# features<-featureGen(features, 10018, 1000043, "carConsumePart5Freq", 3)
+# features<-featureGen(features, 10018, 1000043, "carConsume5Freq", 4)
+# features<-featureGen(features, 10018, 1000043, "carConsume4sSum", 5)
+# features<-featureGen(features, 10018, 1000043, "carConsumeFreq", 6)
+# features<-featureGen(features, 10018, 1000043, "carConsume7Sum", 7)
 
 features<-featureGen(features, 10018, 1000044, "currentJobyear")
 features<-featureGen(features, 10018, 1000045, "monthIncome")
