@@ -77,9 +77,18 @@ card12mths<-unionTrxn[daysFromApply<=360 & daysFromApply>0,
 
 card1mth<-unionTrxn[daysFromApply<=30 & daysFromApply>0, 
                     .("highRiskTransAvg1Total"=sum(highRisk*transexpenses),
+                      "highRiskTransNum1"=sum(highRisk),
                       "multiBorrowNumP1"=sum(multiPlat),
                       "lastMonthOverdrawNum"=sum(overdraw),
                       "transFalsePastMonth"=sum(fTrans)
                     ), by=c("financingprojectid","createtime")]
+
+
+
+unionPayRebuilt<-merge(card3mths, card6mths, by=c("financingprojectid","createtime"), all.x=T)
+unionPayRebuilt<-merge(unionPayRebuilt, card12mths, by=c("financingprojectid","createtime"), all.x=T)
+unionPayRebuilt<-merge(unionPayRebuilt, card1mth, by=c("financingprojectid","createtime"), all.x=T)
+
+
 
 

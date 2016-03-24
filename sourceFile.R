@@ -1,4 +1,4 @@
-# source("~/jimu/sourceFile.R")
+source("~/jimu/generalFunction.R")
 box <- "E:/Seafiles/Jimu/Data/adhoc/"
 boxdata <- "E:/Seafiles/Jimu/Data/"
 

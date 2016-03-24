@@ -1,5 +1,4 @@
 source("~/jimu/sourceFile.R")
-source("~/jimu/generalFunction.R")
 features<-ruleq("select 
 p.financingprojectid, 
 p.createtime,
@@ -81,9 +80,9 @@ featureGen(features, 10016, 1000033, "age")
 featureGen(features, 10016, 1000034, "marry")
 features<-featureGen(features, 10016, 1000034, "childrenNum", 2)
 featureGen(features, 10016, 1000035, "local1year")
-features<-featureGen(features, 10016, 1000035, "postConsume02", 2)
-features<-featureGen(features, 10016, 1000035, "postConsume24", 3)
-features<-featureGen(features, 10016, 1000035, "postConsume46", 4)
+# features<-featureGen(features, 10016, 1000035, "postConsume02", 2)
+# features<-featureGen(features, 10016, 1000035, "postConsume24", 3)
+# features<-featureGen(features, 10016, 1000035, "postConsume46", 4)
 featureGen(features, 10016, 1000036.1, "localFriends")
 featureGen(features, 10016, 1000036.2, "longTimeShutdown")
 # featureGen(features, 10016, 1000036.3, "workCondition") #No value
@@ -105,13 +104,6 @@ features<-featureGen(features, 10018, 1000042, "post12PMFeeAmount", 3)
 features<-featureGen(features, 10018, 1000042, "post12PMFeeNum", 4)
 featureGen(features, 10018, 1000043, "zhiceCar")
 features<-featureGen(features, 10018, 1000043, "declareCar", 2) #等价zhiceCar
-
-# t_mod_index里没有这些
-# features<-featureGen(features, 10018, 1000043, "carConsumePart5Freq", 3)
-# features<-featureGen(features, 10018, 1000043, "carConsume5Freq", 4)
-# features<-featureGen(features, 10018, 1000043, "carConsume4sSum", 5)
-# features<-featureGen(features, 10018, 1000043, "carConsumeFreq", 6)
-# features<-featureGen(features, 10018, 1000043, "carConsume7Sum", 7)
 
 features<-featureGen(features, 10018, 1000044, "currentJobyear")
 features<-featureGen(features, 10018, 1000045, "monthIncome")
@@ -146,13 +138,29 @@ features<-featureGen(features, 10019, 1000064, "multiBorrowNumP1")
 # 加上target
 featuresWide<-dcast.data.table(features, financingprojectid + createtime ~ key, fun.agg=min, value.var = "value")
 featuresWide<-merge(featuresWide, target[, c("project_id","Loan_Date","tenor","flgDPD","flgTest"), with=F], by.x="financingprojectid", by.y="project_id")
-test<-featureAnalysis(featuresWide, c("financingprojectid","NA","createtime","Loan_Date","flgDPD","flgTest"))
+# test<-featureAnalysis(featuresWideU, c("financingprojectid","NA","createtime","Loan_Date","flgDPD","flgTest"))
+featuresWide[, createtime:=as.POSIXct(createtime)]
+
+# 补全银联缺失
+names(unionPayRebuilt)<-paste0(names(unionPayRebuilt), ".1")
+##
+featuresWideU<-merge(featuresWide, unionPayRebuilt, by.x="financingprojectid", by.y="financingprojectid.1", all.x=T)
+featuresWideU[!is.na(createtime.1), creditWD3Months:=creditWD3Months.1]
+featuresWideU[!is.na(createtime.1), hightRiskTransNum6:=hightRiskTransNum6.1]
+featuresWideU[!is.na(createtime.1), hightRiskTransAvg6:=hightRiskTransAvg6Total.1/(useCardNumPost6+0.00000000001)]
+featuresWideU[!is.na(createtime.1), post6MonthOverdrawNum:=post6MonthOverdrawNum.1]
+featuresWideU[!is.na(createtime.1), transFalsePast6:=transFalsePast6.1]
+featuresWideU[!is.na(createtime.1), useCardPM:=useCardNumPMTotal.1/(useCardNumPost6+0.00000000001)] #这个变量根本没出现6，可是却是6个月平均刷卡消费频率
+featuresWideU[!is.na(createtime.1), post12PMFeeAmount:=post12PMFeeAmount.1]
+featuresWideU[!is.na(createtime.1), post12PMFeeNum:=post12PMFeeNum.1]
+featuresWideU[!is.na(createtime.1), hightRiskTransAvg1:=highRiskTransAvg1Total.1]
+featuresWideU[!is.na(createtime.1), hightRiskTransNum1:=highRiskTransNum1.1]
+featuresWideU[!is.na(createtime.1), multiBorrowNumP1:=multiBorrowNumP1.1]
+featuresWideU[!is.na(createtime.1), lastMonthOverdrawNum:=lastMonthOverdrawNum.1]
+featuresWideU[!is.na(createtime.1), transFalsePastMonth:=transFalsePastMonth.1]
+featuresWideU[!is.na(createtime.1), transFalsePast6:=transFalsePast6.1]
 
 
-# 系统性缺失
-viewAllValues(featuresWide, "flgDPD")
-viewAllValues(featuresWide[!is.na(tongdunIdMultiLoanNum)], "Loan_Date")
-viewAllValues(featuresWide, "tongdunIdMultiLoanNum")
-viewAllValues(featuresWide, "tongdunPhoneMultiLoanNum")
-viewAllValues(featuresWide, "tongdunPhoneMultiLoanNum")
+# 补全同盾缺失
+
 
