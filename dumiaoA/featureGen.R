@@ -142,6 +142,7 @@ featuresWide<-merge(featuresWide, target[, c("project_id","Loan_Date","tenor","f
 featuresWide[, createtime:=as.POSIXct(createtime)]
 
 # 补全银联缺失
+# source("~/jimu/dumiaoA/rebuildUnionpay.R")
 names(unionPayRebuilt)<-paste0(names(unionPayRebuilt), ".1")
 ##
 featuresWideU<-merge(featuresWide, unionPayRebuilt, by.x="financingprojectid", by.y="financingprojectid.1", all.x=T)
@@ -160,7 +161,47 @@ featuresWideU[!is.na(createtime.1), lastMonthOverdrawNum:=lastMonthOverdrawNum.1
 featuresWideU[!is.na(createtime.1), transFalsePastMonth:=transFalsePastMonth.1]
 featuresWideU[!is.na(createtime.1), transFalsePast6:=transFalsePast6.1]
 
+featuresWideU[, c("creditWD3Months.1","hightRiskTransNum6.1","hightRiskTransAvg6Total.1","post6MonthOverdrawNum.1",
+                  "transFalsePast6.1","useCardNumPMTotal.1","post12PMFeeAmount.1","post12PMFeeNum.1",
+                  "highRiskTransAvg1Total.1","highRiskTransNum1.1","multiBorrowNumP1.1","lastMonthOverdrawNum.1",
+                  "transFalsePastMonth.1"):=NULL]
+featuresWideU[, transFalsePast6.1:=NULL]
+
+# 删掉一个啥资料都没有的人
+featuresWideU<-featuresWideU[!financingprojectid==121237, ]
 
 # 补全同盾缺失
+tongdun<-ruleq("select pd.financingprojectid
+                ,DATE(pd.createtime) as createtime
+                ,td.rule_score
+                ,td.rule_name
+                ,td.final_score
+                from t_pat_tongdun_blank td
+                join project_detail pd
+                on td.service_id = pd.service_id
+                ")
+tongdun[rule_name=='3个月内身份证在多个平台进行借款', rule_name:='tongdunIdMultiLoanNum']
+tongdun[rule_name=='3个月内手机在多个平台进行借款', rule_name:='tongdunPhoneMultiLoanNum']
+tongdun[rule_name=='3个月内银行卡在多个平台进行借款', rule_name:='tongdunBankCardMultiLoanNum']
+tongdun[rule_name=='借款人身份证命中法院执行法院失信证据库', rule_name:='tongdunIdDiscredit']
+tongdun[, ruleCnt:=ifelse(rule_name=='', 0, 1)]
+
+test<-dcast.data.table(tongdun, financingprojectid ~ rule_name, fun.agg=max, value.var = "ruleCnt")
+test[, V1:=NULL]
+test[test==-Inf]<-0
+
+
+featuresWideU[, c("tongdunIdDiscredit","tongdunIdMultiLoanNum","tongdunPhoneDiscredit","tongdunPhoneMultiLoanNum"):=NULL]
+featuresWideU<-merge(featuresWideU, test, by="financingprojectid")
+
+###################################################################################
+trainData <- featuresWideU[flgTest==0,]
+sampleAnal<-sampleMissingAnalysis(trainData, "financingprojectid")
+
+# 删掉一些缺失太多的
+trainDataFinal <- trainData[!(financingprojectid %in% c(217073,207891,206019,207993,208577,213320,214510)),]
+
+
+
 
 

@@ -66,6 +66,8 @@ banding <- function(DT, columnValue, columnBand, bands=seq(0, 1, 0.1)){
 # 拉平data.table 
 # test<-dcast.data.table(DT, mainID(用来left join的那个) ~ 变量名, fun.agg=max, value.var = "变量值")
 
+
+##############################################行/列分析
 # 把features的min/max/percentile/Nmiss etc.做成一个data.frame
 featureAnalysis <- function(DT, exclude, cateConv=F) {
   result <- data.frame(VarName=character(),
@@ -149,4 +151,15 @@ featureAnalysis <- function(DT, exclude, cateConv=F) {
                    "Min","Median","Max","P01","P05","P10","P25","P75","P90","P95","P99")
   return(result)
 }
+
+sampleMissingAnalysis <- function(DT, IDRow) {
+  result<-data.frame()
+  for(i in 1:nrow(DT)){
+    result<-rbind(result, c(unlist(DT[i, IDRow, with=F]), sum(is.na(DT[i, ]))))
+  }
+  names(result)<-c("rowNum","missingCnt")
+  return(result)
+}
+
+
 
