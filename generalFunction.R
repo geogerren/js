@@ -2,6 +2,11 @@ monthDiff <- Vectorize(function(startMth, endMth){
   return((as.numeric(substr(endMth,1,4))-as.numeric(substr(startMth,1,4)))*12+(as.numeric(substr(endMth,5,6))-as.numeric(substr(startMth,5,6))))
 })
 
+Mode <- function(x) {
+  ux <- unique(x)
+  ux[which.max(tabulate(match(x, ux)))]
+}
+
 ############## Parse 二人转
 # Parse strings, default pattern: targetText:Value(<>) 
 # 先用str_extract取targetText之后的一段string，然后用strStart, strEnd截targetText的值
@@ -54,7 +59,12 @@ isAlphaNum <- Vectorize(function(str){
 
 # 把NA什么的替换成0或者你想要的
 naBlankInfer <- function(DT, column, inferFrom=c(NA, 'None', ''), inferTo=0){
-  DT[get(column) %in% inferFrom, column:=as.character(inferTo), with=F]
+  if(inferTo=="median"){
+    med<-median(as.numeric(unlist(DT[, column, with=F])), na.rm=T)
+    DT[get(column) %in% inferFrom, column:=as.character(med), with=F]
+  }else{
+    DT[get(column) %in% inferFrom, column:=as.character(inferTo), with=F]
+  }
 }
 
 
@@ -93,7 +103,8 @@ featureAnalysis <- function(DT, exclude, cateConv=F) {
 
   for(varName in names(DT)){
     if(!(varName %in% exclude)){
-      if(length(table(as.numeric(unlist(DT[, varName, with=F]))))>0){
+      if(!is.factor(unlist(DT[, varName, with=F])) & 
+         length(table(as.numeric(unlist(DT[, varName, with=F]))))>0){
         DT[, varName:=as.numeric(get(varName)), with=F]
       }
       print(varName)
@@ -102,7 +113,7 @@ featureAnalysis <- function(DT, exclude, cateConv=F) {
         DT[, varName:=as.factor(get(varName)), with=F]
       }
       oneVar<-unlist(DT[, varName, with=F])
-      if(typeof(oneVar)=="double"){
+      if(typeof(oneVar) %in% c("double","integer")){
         newRow<-data.frame(varName, 
                            typeof(oneVar),
                            length(oneVar), 

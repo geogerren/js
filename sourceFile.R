@@ -11,6 +11,11 @@ library(stringr)
 # library(pROC)
 # library(ROCR)
 library(PRROC)
+
+library(woe)
+library(varSelRF)
+
+
 # Jimu data queries
 drv <- dbDriver("MySQL")
 aecon <- dbConnect(drv, user="dumiao_analysis", password="analysis4321",

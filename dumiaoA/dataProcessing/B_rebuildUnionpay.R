@@ -83,7 +83,8 @@ card1mth<-unionTrxn[daysFromApply<=30 & daysFromApply>0,
                       "transFalsePastMonth"=sum(fTrans)
                     ), by=c("financingprojectid","createtime")]
 
-
+# cardTerm<-unionTrxn[, .("cardTermUnion"=max(daysFromApply)/30), by=c("financingprojectid","createtime")]
+# 在缺失的地方还是缺失的，并没有什么卵用
 
 unionPayRebuilt<-merge(card3mths, card6mths, by=c("financingprojectid","createtime"), all.x=T)
 unionPayRebuilt<-merge(unionPayRebuilt, card12mths, by=c("financingprojectid","createtime"), all.x=T)

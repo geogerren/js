@@ -1,3 +1,4 @@
+source("~/jimu/sourceFile.R")
 ods<-read.csv("E:/Seafiles/Jimu/Data/ods_drawdown_loans.csv", stringsAsFactors = F)
 ods<-data.table(ods)
 ods[, Loan_Date:=as.Date(Loan_Date)]
@@ -126,3 +127,5 @@ target[project_id %in% lostContact]
 
 
 target<-target[!(project_id %in% lostContact$financingprojectid & flgDPD==0), ]
+
+target[, flgDPD:=as.numeric(flgDPD)]
