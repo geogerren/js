@@ -5,15 +5,20 @@ boxdata <- "E:/Seafiles/Jimu/Data/"
 library(RMySQL)
 library(data.table)
 # library(reshape2) # for melt and cast
-library(randomForest)
 library(pmml)
 library(stringr)
-# library(pROC)
-# library(ROCR)
+library(pROC)
+library(ROCR)
 library(PRROC)
 
-library(woe)
+# rf
+library(randomForest)
 library(varSelRF)
+
+# logistic & elastic net
+library(glmnet)
+library(Information)
+library(woe)
 
 
 # Jimu data queries

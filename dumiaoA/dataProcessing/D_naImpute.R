@@ -95,9 +95,6 @@ trainDataFinal[hasShCISReport=='0', c("shCISCreditLine","shCISCurrentOverDueNum"
 # viewAllValues(trainDataFinal, 34)
 # trainDataFinal[, hightRiskTransAvg1:=NULL]
 
-# viewAllValues(trainDataFinal, 35)
-naBlankInfer(trainDataFinal, "hightRiskTransAvg6", inferTo= 0)
-
 # viewAllValues(trainDataFinal, 36)
 # trainDataFinal[, hightRiskTransNum1:=NULL]
 
@@ -229,7 +226,7 @@ trainDataFinal[, useCardLastTime:=as.numeric(useCardLastTime)]
 naBlankInfer(trainDataFinal, "useCardLastTime", inferTo= 24)
 
 # viewAllValues(trainDataFinal, 86)
-median(as.numeric(trainDataFinal$useCardNumPost6), na.rm=T)
+# median(as.numeric(trainDataFinal$useCardNumPost6), na.rm=T)
 naBlankInfer(trainDataFinal, "useCardNumPost6", inferTo= 5)
 
 # viewAllValues(trainDataFinal, 87)
@@ -242,7 +239,7 @@ trainDataFinal[, useCardSumRank:=as.numeric(useCardSumRank)]
 # median(trainDataFinal$useCardSumRank, na.rm=T)
 naBlankInfer(trainDataFinal, "useCardSumRank", inferTo= 25.41667)
 
-viewAllValues(trainDataFinal, 89)
+# viewAllValues(trainDataFinal, 89)
 naBlankInfer(trainDataFinal, "workCondition", inferTo= -1)
 
 # viewAllValues(trainDataFinal, 94)
@@ -294,6 +291,7 @@ naBlankInfer(trainDataFinal, "trustAddr", inferTo= 1)
 naBlankInfer(trainDataFinal, "cardType", inferTo= -1)
 
 
+featureAnalTrain<-featureAnalysis(trainDataFinal, exclude=c("financingprojectid","flgDPD","flgTest"))
 
 #################################################################################################
 ##########################################################
@@ -317,7 +315,6 @@ testData[, shCISOverdualNum_24month:=NULL]
 testData[, shCISOverdualNum_3month:=NULL]
 testData[, trustIP:=NULL]
 testData[, unexpectedApplyTime:=NULL]
-testData[, unionpayHouse:=NULL]
 testData[, unionpayIdCardNameCheck:=NULL]
 testData[, unionpayMobileCardCheck:=NULL]
 testData[, unionpayNameCardCheck:=NULL]
@@ -327,5 +324,81 @@ testData[, flgTest:=NULL]
 
 
 
+naBlankInfer(testData, "amuseConsumeFreq", inferTo= 0)
+naBlankInfer(testData, "applicantContact", inferTo= -1)
+naBlankInfer(testData, "callEcpNum", inferTo= 0)
+naBlankInfer(testData, "called5", inferTo= 6)
+naBlankInfer(testData, "cardTerm", inferTo= -1)
+naBlankInfer(testData, "cardType", inferTo= -1)
+naBlankInfer(testData, "cellphoneAuth", inferTo= 1)
+testData[, consumeFreg:=as.numeric(consumeFreg)]
+testData[, consumeFreg:=round(consumeFreg)]
+naBlankInfer(testData, "consumeFreg", inferTo= 2)
+testData[, consumeLineRate:=as.numeric(consumeLineRate)]
+naBlankInfer(testData, "consumeLineRate", inferTo= 0.005714286)
+testData[, consumeTop:=as.numeric(consumeTop)]
+naBlankInfer(testData, "consumeTop", inferTo= 20)
+naBlankInfer(testData, "creditCashAvg", inferTo= 0)
+naBlankInfer(testData, "creditCashFreq", inferTo= 0)
+naBlankInfer(testData, "creditWD3Months", inferTo= 0)
+naBlankInfer(testData, "creditWDAvg", inferTo= 0)
+naBlankInfer(testData, "creditWDFreq", inferTo= 0)
+testData[, zhiceCar:=declareCar]
+testData[, declareCar:=NULL]
+naBlankInfer(testData, "zhiceCar", inferTo= 0)
+naBlankInfer(testData, "goOut120", inferTo= -1)
+naBlankInfer(testData, "hasShCISReport", inferTo= 0)
+testData[hasShCISReport=='0', c("shCISCreditLine","shCISCurrentOverDueNum",
+                                      "shCISLoanQueryNo_3month", "shCISOverdualNum_3month", 
+                                      "shCISOverdualNum_24month", "shCISMaxOverdual_24month"):=0]
+naBlankInfer(testData, "lastMonthOverdrawNum", inferTo= 0)
+naBlankInfer(testData, "loansCalls1", inferTo= 5)
+naBlankInfer(testData, "loansCalls3", inferTo= 5)
+naBlankInfer(testData, "longTimeShutdown", inferTo= 0)
+naBlankInfer(testData, "month62ConsumeAvg", inferTo= 4625.812)
+naBlankInfer(testData, "month62ConsumeAvg", inferTo= 4625.812)
+naBlankInfer(testData, "nightConsumeNum", inferTo= 0)
+naBlankInfer(testData, "noNeedMobileAuthCheck", inferTo= 0)
+naBlankInfer(testData, "normalContact", inferTo= 0)
+naBlankInfer(testData, "post12PMFeeAmount", inferTo= 0)
+naBlankInfer(testData, "post12PMFeeNum", inferTo= 0)
+naBlankInfer(testData, "post6MonthOverdrawNum", inferTo= 0)
+naBlankInfer(testData, "postMonthConsumeFreg", inferTo= 4)
+naBlankInfer(testData, "shCISCreditLine", inferTo = 0)
+naBlankInfer(testData, "tachEcp", inferTo= 108.5)
+naBlankInfer(testData, "thisCityIsTop3", inferTo= 1)
+naBlankInfer(testData, "transFalsePast6", inferTo= 0)
+naBlankInfer(testData, "transFalsePastMonth", inferTo= 0)
+naBlankInfer(testData, "trustAddr", inferTo= 1)
+testData[, zhiceHouse:=unionpayHouse]
+testData[, unionpayHouse:=NULL]
+naBlankInfer(testData, "zhiceHouse", inferTo= 0)
+naBlankInfer(testData, "unionpayPosConsumeCityRank", inferTo= 1)
+testData[, useCardAmountAvg:=as.numeric(useCardAmountAvg)]
+naBlankInfer(testData, "useCardAmountAvg", inferTo= 4830.633)
+testData[, useCardLastTime:=as.numeric(useCardLastTime)]
+naBlankInfer(testData, "useCardLastTime", inferTo= 24)
+naBlankInfer(testData, "useCardNumPost6", inferTo= 5)
+testData[, useCardPM:=as.numeric(useCardPM)]
+naBlankInfer(testData, "useCardPM", inferTo= 4)
+testData[, useCardSumRank:=as.numeric(useCardSumRank)]
+naBlankInfer(testData, "useCardSumRank", inferTo= 25.41667)
+naBlankInfer(testData, "workCondition", inferTo= -1)
 
-naBlankInfer(testData, )
+
+##########补充impute其他未填满的
+naBlankInfer(testData, "avgMonthCall", inferTo= 182)
+naBlankInfer(testData, "zhiceHouse", inferTo= 0)
+naBlankInfer(testData, "trustAddr", inferTo= 1)
+naBlankInfer(testData, "cardType", inferTo= -1)
+
+naBlankInfer(testData, "callBlacklist", inferTo= 0)
+naBlankInfer(testData, "callLaws", inferTo= 0)
+naBlankInfer(testData, "localFriends", inferTo= 1)
+naBlankInfer(testData, "mealsNum", inferTo= 0)
+naBlankInfer(testData, "networkTime6", inferTo= 509)
+
+
+
+featureAnalTest<-featureAnalysis(testData, exclude=c("financingprojectid","flgDPD","flgTest"))
+
