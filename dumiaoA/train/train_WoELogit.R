@@ -1,6 +1,8 @@
+trainWoE <- copy(trainDataFinal)
+testWoE<-copy(testData)
+
 ################################################
 # 2. WOE based Logistic
-trainWoE <- copy(trainDataFinal)
 trainWoE[, applicantContact:=as.factor(applicantContact)]
 trainWoE[, callBlacklist:=as.factor(callBlacklist)]
 trainWoE[, cardTerm:=as.factor(cardTerm)]
@@ -15,20 +17,12 @@ trainWoE[, rule_name:=as.factor(rule_name)]
 trainWoE[, flgDPD:=as.numeric(flgDPD)-1]
 infoTable <- create_infotables(data=trainWoE, y="flgDPD", parallel=F)
 IV <- data.table(infoTable$Summary)
-IV[, power:=ifelse(IV>0.3, 2, ifelse(IV>0.1, 1, ifelse(IV>0.02, 0, -1)))]
-IVDelete<-IV[power<0, ]
+# IV[, power:=ifelse(IV>0.3, 2, ifelse(IV>0.1, 1, ifelse(IV>0.02, 0, -1)))]
+IVDelete<-IV[IV<0.1, ]
 
 trainWoE[, IVDelete$Variable:=NULL]
 trainWoE[, flgDPD:=as.factor(flgDPD)]
 
-chileancredit.train=
-  trainWoE[, flgDPD:=as.integer(flgDPD)]
-smbinning(df=trainWoE,y="flgDPD",x="age",p=0.05)
-
-
-logitWoE<-glm(flgDPD~., data=trainWoE, family=binomial())
-
-testWoE<-copy(testData)
 testWoE[, applicantContact:=as.factor(applicantContact)]
 testWoE[, callBlacklist:=as.factor(callBlacklist)]
 testWoE[, cardTerm:=as.factor(cardTerm)]
@@ -44,11 +38,16 @@ testWoE[, flgDPD:=as.factor(flgDPD)]
 
 testWoE[, IVDelete$Variable:=NULL]
 
+
+# logitWoE<-glm(flgDPD~., data=trainWoE, weight=wgt, family=binomial())
+
+logitWoE<-glm(flgDPD~., data=trainWoE, family=binomial())
+
 testWoE$score<-predict(logitWoE, type='response', testWoE)
 
 WoEcurve<-roc(testWoE$flgDPD, testWoE$score)
 plot(WoEcurve)
-auc(WoEcurve)
+# auc(WoEcurve)
 # 0.6162
 
 plot(fitted(logitWoE), residuals(logitWoE),
@@ -56,4 +55,12 @@ plot(fitted(logitWoE), residuals(logitWoE),
 abline(h=0, lty=2)
 lines(smooth.spline(fitted(logitWoE), residuals(logitWoE)))
 
+HMeasure(testWoE$flgDPD, testWoE$score, threshold = 0.90)$metrics
+
+
+
+
+
+
+plot_infotables(infoTable, "")
 

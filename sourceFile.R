@@ -1,4 +1,4 @@
-source("~/jimu/generalFunction.R")
+source("E:/Seafiles/Jimu/Code/js/generalFunction.R")
 box <- "E:/Seafiles/Jimu/Data/adhoc/"
 boxdata <- "E:/Seafiles/Jimu/Data/"
 
@@ -21,6 +21,8 @@ library(glmnet)
 library(Information)
 library(smbinning)
 
+# Model validation
+library(hmeasure)
 
 # Jimu data queries
 drv <- dbDriver("MySQL")

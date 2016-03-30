@@ -1,4 +1,4 @@
-source("~/jimu/sourceFile.R")
+source("~/js/sourceFile.R")
 features<-ruleq("select 
 p.financingprojectid, 
 p.createtime,
@@ -145,7 +145,7 @@ featuresWide[, "NA":=NULL]
 # source("~/jimu/dumiaoA/rebuildUnionpay.R")
 names(unionPayRebuilt)<-paste0(names(unionPayRebuilt), ".1")
 ##
-options(warn=-1)
+# options(warn=-1)
 featuresWideU<-merge(featuresWide, unionPayRebuilt, by.x="financingprojectid", by.y="financingprojectid.1", all.x=T)
 featuresWideU[!is.na(createtime.1), creditWD3Months:=creditWD3Months.1]
 featuresWideU[!is.na(createtime.1), hightRiskTransNum6:=hightRiskTransNum6.1]

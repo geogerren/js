@@ -47,6 +47,7 @@ auc(VLcurve)
 # perf<-performance(pred, "tpr", "fpr")
 # max(attr(perf, 'y.values')[[1]]-attr(perf, 'x.values')[[1]])
 
+HMeasure(testVL$flgDPD, testVL$score)
 
 plot(fitted(logitVL), residuals(logitVL),
      xlab = "Fitted Values", ylab = "Residuals")
