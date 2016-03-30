@@ -10,6 +10,7 @@ library(stringr)
 library(pROC)
 library(ROCR)
 library(PRROC)
+library(caret)
 
 # rf
 library(randomForest)
@@ -18,7 +19,7 @@ library(varSelRF)
 # logistic & elastic net
 library(glmnet)
 library(Information)
-library(woe)
+library(smbinning)
 
 
 # Jimu data queries

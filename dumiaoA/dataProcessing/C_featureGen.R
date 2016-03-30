@@ -166,7 +166,6 @@ featuresWideU[, c("creditWD3Months.1","hightRiskTransNum6.1","hightRiskTransAvg6
                   "transFalsePast6.1","useCardNumPMTotal.1","post12PMFeeAmount.1","post12PMFeeNum.1",
                   "highRiskTransAvg1Total.1","highRiskTransNum1.1","multiBorrowNumP1.1","lastMonthOverdrawNum.1",
                   "transFalsePastMonth.1","createtime.1"):=NULL]
-featuresWideU[, transFalsePast6.1:=NULL]
 
 # 删掉一个啥资料都没有的人
 featuresWideU<-featuresWideU[!financingprojectid==121237, ]
@@ -202,8 +201,8 @@ testData <- featuresWideU[flgTest==1,]
 trainDataFinal <- trainData[!(financingprojectid %in% c(217073,207891,206019,207993,208577,213320,214510)),]
 
 
-featureAnalBeforeImpute<-featureAnalysis(trainDataFinal, exclude=c("financingprojectid","createtime","NA","Loan_Date"
-                                                                           ,"flgDPD","flgTest","createtime.1"))
+# featureAnalBeforeImpute<-featureAnalysis(trainDataFinal, exclude=c("financingprojectid","createtime","NA","Loan_Date"
+#                                                                            ,"flgDPD","flgTest","createtime.1"))
 # 一个一个impute，转换成factor
 # 另开一个file
 

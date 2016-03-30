@@ -26,3 +26,11 @@ modelScoreAnalysis<-scoresWide[, .("badCnt"=sum(ODFlag), "totalCnt"=.N), by="mod
 zhimaScoreAnalysis<-scoresWide[, .("badCnt"=sum(ODFlag), "totalCnt"=.N), by="zhimaScoreBand"]
 
 quantile(scoresWide$zhimaScore, probs=bands, na.rm=T)
+
+
+
+
+plot(fitted(logitWoE), residuals(logitWoE),
+     xlab = "Fitted Values", ylab = "Residuals")
+abline(h=0, lty=2)
+lines(smooth.spline(fitted(logitWoE), residuals(logitWoE)))

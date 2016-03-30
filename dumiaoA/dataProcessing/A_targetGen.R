@@ -4,6 +4,7 @@ ods<-data.table(ods)
 ods[, Loan_Date:=as.Date(Loan_Date)]
 ods[, statc_dt:=as.Date(statc_dt)]
 ods<-ods[!(Loan_Date>='2015-11-03'&Loan_Date<='2015-11-30'), ]
+ods<-ods[order(ods$Loan_Date)]
 
 
 # 15 days DQ in 90 days 
@@ -121,10 +122,10 @@ mapping[, borroweruserid:=as.integer(borroweruserid)]
 mapping[, financingprojectid:=as.integer(financingprojectid)]
 lostContact <- merge(lostContact, mapping, by.x="委案编号", by.y="borroweruserid", all.x=T)
 
-
-target[project_id %in% lostContact$financingprojectid, ]
-target[project_id %in% lostContact]
-
+# 
+# target[project_id %in% lostContact$financingprojectid, ]
+# target[project_id %in% lostContact]
+# 
 
 target<-target[!(project_id %in% lostContact$financingprojectid & flgDPD==0), ]
 

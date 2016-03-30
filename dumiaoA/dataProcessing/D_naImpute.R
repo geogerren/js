@@ -245,9 +245,9 @@ naBlankInfer(trainDataFinal, "workCondition", inferTo= -1)
 # viewAllValues(trainDataFinal, 94)
 
 #########################################################################################
-featureAnalAfterImpute<-featureAnalysis(trainDataFinal, 
-                                        exclude=c("financingprojectid",
-                                                  "flgDPD","flgTest","createtime.1"))
+# featureAnalAfterImpute<-featureAnalysis(trainDataFinal, 
+#                                         exclude=c("financingprojectid",
+#                                                   "flgDPD","flgTest","createtime.1"))
 
 
 trainDataFinal[, callNetLoanBlank:=NULL]
@@ -280,9 +280,9 @@ trainDataFinal[, flgTest:=NULL]
 
 
 
-
-featureAnalAfterSingleValueRemove<-featureAnalysis(trainDataFinal, 
-                                        exclude=c("financingprojectid","flgDPD","flgTest"))
+# 
+# featureAnalAfterSingleValueRemove<-featureAnalysis(trainDataFinal, 
+#                                         exclude=c("financingprojectid","flgDPD","flgTest"))
 
 ##########补充impute其他未填满的
 naBlankInfer(trainDataFinal, "avgMonthCall", inferTo= 182)
@@ -402,3 +402,7 @@ naBlankInfer(testData, "networkTime6", inferTo= 509)
 
 featureAnalTest<-featureAnalysis(testData, exclude=c("financingprojectid","flgDPD","flgTest"))
 
+
+trainDataFinal[, flgDPD:=as.factor(flgDPD)]
+trainDataFinal[, c("NA", "financingprojectid"):=NULL]
+testData[, c("NA", "financingprojectid"):=NULL]
