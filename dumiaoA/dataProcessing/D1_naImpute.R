@@ -22,9 +22,6 @@ typeConverter(featuresWideU, c("callBlacklist", "callLaws", "callNetLoanBlank",
                                "marry", "longTimeShutdown", "localFriends", "noNeedMobileAuthCheck", "sex", "normalContact", 
                                "tachEcp", "trustAddr", "trustIP", "flgDPD","FLAG_12_var1"), "factor")
 
-imputeResult<-ggImpute(featuresWideU)
-
-featuresWideU[, imputeResult$removeList:=NULL]
 
 
 
@@ -34,6 +31,9 @@ testData <- featuresWideU[flgTest==0&flgTrainTest==1,]
 holdoutData<- featuresWideU[flgTest==1,]
 
 
+imputeResult<-ggImpute(trainData)
+
+featuresWideU[, imputeResult$removeList:=NULL]
 
 
 
