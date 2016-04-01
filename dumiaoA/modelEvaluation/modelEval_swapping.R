@@ -1,3 +1,12 @@
+# Pull population features
+
+
+
+
+
+
+
+
 scores<-ruleq("select 
 p.financingprojectid, 
                 t.mod_id,
@@ -5,12 +14,9 @@ p.financingprojectid,
                 t.rule_id,
                 t.input_val
                 from t_mod_score t
-                join project_detail p
-                on t.service_id = p.service_id
                 ")
 
-featureGen(scores, 10014, "1000031.0", "modelScore")
-featureGen(scores, 10014, "1000031.1", "zhimaScore")
+featureGen(scores, 10000, "1000031.2", "finalScore")
 
 
 scoresWide<-dcast.data.table(scores, financingprojectid ~ key, fun.agg=max, value.var = "value")
@@ -27,10 +33,3 @@ zhimaScoreAnalysis<-scoresWide[, .("badCnt"=sum(ODFlag), "totalCnt"=.N), by="zhi
 
 quantile(scoresWide$zhimaScore, probs=bands, na.rm=T)
 
-
-
-
-plot(fitted(logitWoE), residuals(logitWoE),
-     xlab = "Fitted Values", ylab = "Residuals")
-abline(h=0, lty=2)
-lines(smooth.spline(fitted(logitWoE), residuals(logitWoE)))

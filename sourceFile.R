@@ -11,7 +11,7 @@ library(pROC)
 library(ROCR)
 library(PRROC)
 library(caret)
-
+options(sqldf.driver="SQLite")
 # rf
 library(randomForest)
 library(varSelRF)

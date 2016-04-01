@@ -1,15 +1,11 @@
-source("~/js/sourceFile.R")
+
 features<-ruleq("select 
-p.financingprojectid, 
-p.createtime,
-t.mod_id,
-t.index_id,
-t.rule_id,
-t.input_val
-from t_mod_score t
-join project_detail p
-on t.service_id = p.service_id
-")
+                t.mod_id,
+                t.index_id,
+                t.rule_id,
+                t.input_val
+                from t_mod_score t
+                ")
 
 ########################################################################################
 # Pull出现有的变量
@@ -172,13 +168,13 @@ featuresWideU<-featuresWideU[!financingprojectid==121237, ]
 
 # 补全同盾缺失
 tongdun<-ruleq("select pd.financingprojectid
-                ,DATE(pd.createtime) as createtime
-                ,td.rule_name
-                ,td.final_score
-                from t_pat_tongdun_blank td
-                join project_detail pd
-                on td.service_id = pd.service_id
-                ")
+               ,DATE(pd.createtime) as createtime
+               ,td.rule_name
+               ,td.final_score
+               from t_pat_tongdun_blank td
+               join project_detail pd
+               on td.service_id = pd.service_id
+               ")
 tongdun[rule_name=='3个月内身份证在多个平台进行借款', rule_name:='tongdunIdMultiLoanNum']
 tongdun[rule_name=='3个月内手机在多个平台进行借款', rule_name:='tongdunPhoneMultiLoanNum']
 tongdun[rule_name=='3个月内银行卡在多个平台进行借款', rule_name:='tongdunBankCardMultiLoanNum']

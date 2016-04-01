@@ -25,15 +25,16 @@ target3[, DPD8to14in:=ifelse(DPD8to14in90>0,1,0)]
 target3[, DPD15out:=ifelse(DPD15out90>0,1,0)]
 target3[, DPD15in:=ifelse(DPD15in90>0,1,0)]
 target3[, flgDPD:=ifelse(DPD15in==1, 1, ifelse(DPD8to14in==1|DPD15out==1, -1, 0))]
+
+target3[, c("DPD8to14in90","DPD15out90","DPD15in90"):=NULL]
 target3Final<-target3[flgDPD!=-1,]
 
-k3<-floor(0.75*nrow(target3Final))
+k3<-floor(0.80*nrow(target3Final))
 target3Final[1:k3, flgTest:=0]
 target3Final[(k3+1):nrow(target3Final), flgTest:=1]
 
-target3Final[, c("DPD8to14in90","DPD15out90","DPD15in90"):=NULL]
 
-table(target3$flgDPD)
+# table(target3$flgDPD)
 # 不包含11.3-11.30
 # -1   0   1 
 # 52 738 103 
@@ -59,15 +60,17 @@ target2[, DPD8to14in:=ifelse(DPD8to14in60>0,1,0)]
 target2[, DPD15out:=ifelse(DPD15out60>0,1,0)]
 target2[, DPD15in:=ifelse(DPD15in60>0,1,0)]
 target2[, flgDPD:=ifelse(DPD15in==1, 1, ifelse(DPD8to14in==1|DPD15out==1, -1, 0))]
+
+target2[, c("DPD8to14in60","DPD15out60","DPD15in60"):=NULL]
 target2Final<-target2[flgDPD!=-1,]
 
-k2<-floor(0.75*nrow(target2Final))
+k2<-floor(0.8*nrow(target2Final))
 target2Final[1:k2, flgTest:=0]
 target2Final[(k2+1):nrow(target2Final), flgTest:=1]
 
-target2Final[, c("DPD8to14in60","DPD15out60","DPD15in60"):=NULL]
 
-table(target2$flgDPD)
+
+# table(target2$flgDPD)
 # 不包含11.3-11.30
 # 0  1 
 # 30  4 
@@ -93,15 +96,16 @@ target1[, DPD8to14in:=ifelse(DPD8to14in30>0,1,0)]
 target1[, DPD15out:=ifelse(DPD15out30>0,1,0)]
 target1[, DPD15in:=ifelse(DPD15in30>0,1,0)]
 target1[, flgDPD:=ifelse(DPD15in==1, 1, ifelse(DPD8to14in==1|DPD15out==1, -1, 0))]
+
+target1[, c("DPD8to14in30","DPD15out30","DPD15in30"):=NULL]
 target1Final<-target1[flgDPD!=-1,]
 
-k1<-floor(0.75*nrow(target1Final))
+k1<-floor(0.8*nrow(target1Final))
 target1Final[1:k1, flgTest:=0]
 target1Final[(k1+1):nrow(target1Final), flgTest:=1]
 
-target1Final[, c("DPD8to14in30","DPD15out30","DPD15in30"):=NULL]
 
-table(target1$flgDPD)
+# table(target1$flgDPD)
 # 不包含11.3-11.30
 # -1   0 
 # 17 111 
@@ -111,6 +115,8 @@ table(target1$flgDPD)
 # 23 137 
 
 target<-rbind(target1Final, target2Final, target3Final)
+
+# targetTotal<-rbind(target1, target2, target3)
 
 ################################################################################
 # 去除失联人员
@@ -122,11 +128,29 @@ mapping[, borroweruserid:=as.integer(borroweruserid)]
 mapping[, financingprojectid:=as.integer(financingprojectid)]
 lostContact <- merge(lostContact, mapping, by.x="委案编号", by.y="borroweruserid", all.x=T)
 
-# 
-# target[project_id %in% lostContact$financingprojectid, ]
-# target[project_id %in% lostContact]
-# 
-
 target<-target[!(project_id %in% lostContact$financingprojectid & flgDPD==0), ]
 
-target[, flgDPD:=as.numeric(flgDPD)]
+# target[, flgDPD:=as.numeric(flgDPD)]
+
+
+
+################################################################################
+remove(lostContact)
+remove(mapping)
+remove(ods)
+remove(ods30DaysPerf)
+remove(ods30days_pivot)
+remove(ods60DaysPerf)
+remove(ods60days_pivot)
+remove(ods90DaysPerf)
+remove(ods90days_pivot)
+remove(target1)
+remove(target2)
+remove(target3)
+remove(k1)
+remove(k2)
+remove(k3)
+
+target[project_id %in% sample(target[flgTest==0, ]$project_id, floor(nrow(target[flgTest==0, ])*1/6)), flgTrainTest:=1]
+
+
