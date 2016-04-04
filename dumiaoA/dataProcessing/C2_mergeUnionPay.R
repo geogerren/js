@@ -1,3 +1,4 @@
+source("E:/Seafiles/Jimu/Code/js/sourceFile.R")
 
 # options(warn=-1)
 featuresWideU<-merge(featuresWide, unionpayAgg, by="financingprojectid", all.x=T)

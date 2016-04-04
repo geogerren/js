@@ -247,43 +247,47 @@ naBlankInfer <- function(DT, column, inferFrom=c(NA, 'None', ''), inferTo=0){
   DT[get(column) %in% inferFrom, column:=as.character(inferTo), with=F]
 }
 
-ggImpute <- function(DT){
+ggImpute <- function(DT, fullImpute=TRUE, removeMassiveMissing=TRUE){
   tooMuchMissingList <- c()
   imputeValueTable <- data.frame(col=as.character("name"), imputeValue=as.character("Value"), stringsAsFactors = F)
   for(col in names(DT)){
     imputeColVec<-unlist(DT[, col, with=F])
     if(sum(is.na(imputeColVec))/sum(!is.na(imputeColVec))>=2/3){
       tooMuchMissingList<-append(tooMuchMissingList, col)
-      next
+      if(removeMassiveMissing)
+        next
     }
-    if(is.numeric(imputeColVec)){
-      if(length(unique(imputeColVec))>10){
-        imputeValue<-median(imputeColVec, na.rm=T)
-      }else if( sum(imputeColVec==Mode(imputeColVec), na.rm=T) < 0.6*sum(!is.na(imputeColVec)) ){
-        imputeValue<-mean(imputeColVec, na.rm=T)
+    if(fullImpute){
+      if(is.numeric(imputeColVec)){
+        if(length(unique(imputeColVec))>10){
+          imputeValue<-median(imputeColVec, na.rm=T)
+        }else if( sum(imputeColVec==Mode(imputeColVec), na.rm=T) < 0.6*sum(!is.na(imputeColVec)) ){
+          imputeValue<-mean(imputeColVec, na.rm=T)
+        }else{
+          imputeValue<-Mode(imputeColVec)
+        }
+        naBlankInfer(DT, col, inferTo = imputeValue)
+        imputeValueTable<-rbind(imputeValueTable, data.frame(col, imputeValue))
+        next
+      }else if(is.factor(imputeColVec)){
+        if( sum(imputeColVec==Mode(imputeColVec), na.rm=T) < 0.6*sum(!is.na(imputeColVec)) ){
+          imputeValue<-"999"
+        }else{
+          imputeValue<-Mode(imputeColVec)
+        }
+        naBlankInfer(DT, col, inferTo = imputeValue)
+        imputeValueTable<-rbind(imputeValueTable, data.frame(col, imputeValue))
+        next
       }else{
         imputeValue<-Mode(imputeColVec)
+        naBlankInfer(DT, col, inferTo = imputeValue)
+        imputeValueTable<-rbind(imputeValueTable, data.frame(col, imputeValue))
+        next
       }
-      naBlankInfer(DT, col, inferTo = imputeValue)
-      imputeValueTable<-rbind(imputeValueTable, data.frame(col, imputeValue))
-      next
-    }else if(is.factor(imputeColVec)){
-      if( sum(imputeColVec==Mode(imputeColVec), na.rm=T) < 0.6*sum(!is.na(imputeColVec)) ){
-        imputeValue<-"999"
-      }else{
-        imputeValue<-Mode(imputeColVec)
-      }
-      naBlankInfer(DT, col, inferTo = imputeValue)
-      imputeValueTable<-rbind(imputeValueTable, data.frame(col, imputeValue))
-      next
     }else{
-      imputeValue<-Mode(imputeColVec)
-      naBlankInfer(DT, col, inferTo = imputeValue)
-      imputeValueTable<-rbind(imputeValueTable, data.frame(col, imputeValue))
-      next
+      naBlankInfer(DT, col, inferTo = -99999)
     }
   }
-  
   return(list(removeList=tooMuchMissingList, imputeValues=imputeValueTable))
 }
   

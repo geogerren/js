@@ -1,7 +1,7 @@
 
 featuresWideU[, c("financingprojectid","createtime","Loan_Date"):=NULL]
 
-printTable(featuresWideU)
+# printTable(featuresWideU)
 
 featuresWideU[, sex:=ifelse(sex=='M', 1, 0)]
 
@@ -10,7 +10,7 @@ featureAnalysis(featuresWideU, exclude=c("financingprojectid", "createtime", "ca
                                          "inBlanklist", "highZhimaScore", "inJulixinBlanklist", "inZhimaBlank", "juxinliSuccess",
                                          "marry", "longTimeShutdown", "localFriends", "noNeedMobileAuthCheck", "sex", "normalContact", 
                                          "tachEcp", "trustAddr", "trustIP", "flgDPD", "FLAG_12_var1","LOC_6_var12","LOC_6_var13"
-                                         ,"LOC_6_var14", "dc_flag"))
+                                         ,"LOC_6_var14", "dc_flag", "flgTest", "flgTrainTest"))
 
 
 featuresWideU[, c("LOC_6_var12","LOC_6_var13", "LOC_6_var14", "dc_flag"):=NULL]
@@ -31,14 +31,8 @@ testData <- featuresWideU[flgTest==0&flgTrainTest==1,]
 holdoutData<- featuresWideU[flgTest==1,]
 
 
-imputeResult<-ggImpute(trainData)
+imputeResult<-ggImpute(trainData, fullImpute = F, removeMassiveMissing = F)
 
 featuresWideU[, imputeResult$removeList:=NULL]
 
 
-
-
-
-
-
-ggImmpute(featuresWide)
