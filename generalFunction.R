@@ -182,14 +182,31 @@ printTable <- function(DT){
 #   return(result)
 # }
 
-woeCalc <- function(DT, X, Y, binning=NULL, events=1, nonevents=0){
+# categoricalDefault set to TRUE if want to automatically bin by the factor levels
+# Sample binning data table: data.table(1, c(1,2,3))
+woeCalc <- function(DT, X, Y, binning=NULL, categoricalDefault=FALSE, events=1, nonevents=0){
+  if(!(X %in% names(DT)))
+    return("Not a valid variable!")
+  woeVarName<-paste0("w_", X)
+  DT[, woeVarName:=NULL, with=F]
   resultCalc<-DT[, c(X,Y), with=F]
   independent<-unlist(DT[, X, with=F])
   if(is.null(binning)){
-    tryCatch(resultCalc[, range:=cut_number(independent, 2)], error=function(e) e, 
-             finally=return(X))
+    if(categoricalDefault){
+      if(!is.factor(independent))
+        return("Not a Factor!")
+      resultCalc[, range:=get(X)]
+    }else{
+      tryCatch(resultCalc[, range:=cut_number(independent, 2)], error=function(e) e, 
+               finally=return(X))
+    }
   }else if(length(binning)==1){
     resultCalc[, range:=cut_number(independent, binning)]
+  }else if(is.data.frame(binning)){
+    names(binning)<-c("range", "value")
+    binning[, value:=as.character(value)]
+    resultCalc[, X:=as.character(get(X)), with=F]
+    resultCalc<-merge(resultCalc, binning, by.x=X, by.y="value", all.x=T)
   }else{
     resultCalc[, range:=cut(independent, binning)]
   }
@@ -205,8 +222,16 @@ woeCalc <- function(DT, X, Y, binning=NULL, events=1, nonevents=0){
   result[, IV:=sum((NonEventsPctg-EventsPctg)*WoE)]
   result[, varName:=X]
   result<-result[order(range)]
-  return(result)
+
+  # 把woe放进原data frame
+  DT<-cbind(DT, resultCalc[, "range", with=F])
+  DT<-merge(DT, result[, c("range", "WoE"), with=F], by.x="range", by.y="range")
+  setnames(DT, "WoE", woeVarName)
+  DT[, range:=NULL]
+  print(result)
+  return(DT)
 }
+
 
 woeTable <- function(DT, Y, binning=NULL, events=1, nonevents=0){
   result<-data.frame()
