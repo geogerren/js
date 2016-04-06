@@ -155,50 +155,22 @@ printTable <- function(DT){
   }
 }
 ##############################################WoE计算
-# woeCalc <- function(DT, X, Y, binning=NULL, events=1, nonevents=0){
-#   resultCalc<-DT[, c(X,Y), with=F]
-#   independent<-unlist(DT[, X, with=F])
-#   if(is.null(binning)){
-#     tryCatch(resultCalc[, range:=cut_number(independent, 2)], error=function(e) e, 
-#              finally=return(X))
-#   }else if(is.numeric(binning)){
-#     tryCatch(resultCalc[, range:=cut_number(independent, binning)], error=function(e) e, 
-#              finally=return(X))
-#   }else{
-#       resultCalc[, range:=cut(independent, binning)]
-#   }
-#   resultCalc[, isEvents:=ifelse(get(Y)==events, 1, 0)]
-#   resultCalc[, isNonEvents:=ifelse(get(Y)==nonevents, 1, 0)]
-#   result<-resultCalc[, .("TotalCnt"=.N, 
-#                          "EventsCnt"=sum(isEvents), 
-#                          "NonEventsCnt"=sum(isNonEvents)), 
-#                      by="range"]
-#   result[, EventsPctg:=EventsCnt/sum(EventsCnt)]
-#   result[, NonEventsPctg:=NonEventsCnt/sum(NonEventsCnt)]
-#   result[, WoE:=log(NonEventsPctg/EventsPctg)]
-#   result[, IV:=sum((NonEventsPctg-EventsPctg)*WoE)]
-#   result[, varName:=X]
-#   result<-result[order(range)]
-#   return(result)
-# }
-
 # categoricalDefault set to TRUE if want to automatically bin by the factor levels
 # Sample binning data table: data.table(1, c(1,2,3))
-woeCalc <- function(DT, X, Y, binning=NULL, categoricalDefault=FALSE, events=1, nonevents=0){
-  if(!(X %in% names(DT)))
-    return("Not a valid variable!")
+woeCalc <- function(DT, X, Y, binning=NULL, events=1, nonevents=0, printResult=T){
+  if(!(X %in% names(DT))){
+    print("Not a valid variable!")
+    return(DT)
+  }
   woeVarName<-paste0("w_", X)
   DT[, woeVarName:=NULL, with=F]
   resultCalc<-DT[, c(X,Y), with=F]
   independent<-unlist(DT[, X, with=F])
   if(is.null(binning)){
-    if(categoricalDefault){
-      if(!is.factor(independent))
-        return("Not a Factor!")
+    if(is.factor(independent) | length(table(independent))<10){
       resultCalc[, range:=get(X)]
     }else{
-      tryCatch(resultCalc[, range:=cut_number(independent, 2)], error=function(e) e, 
-               finally=return(X))
+      resultCalc[, range:=cut_number(independent, 2)]
     }
   }else if(length(binning)==1){
     resultCalc[, range:=cut_number(independent, binning)]
@@ -218,8 +190,8 @@ woeCalc <- function(DT, X, Y, binning=NULL, categoricalDefault=FALSE, events=1, 
                      by="range"]
   result[, EventsPctg:=EventsCnt/sum(EventsCnt)]
   result[, NonEventsPctg:=NonEventsCnt/sum(NonEventsCnt)]
-  result[, WoE:=log(NonEventsPctg/EventsPctg)]
-  result[, IV:=sum((NonEventsPctg-EventsPctg)*WoE)]
+  result[, WoE:=log(EventsPctg/NonEventsPctg)]
+  result[, IV:=sum((EventsPctg-NonEventsPctg)*WoE)]
   result[, varName:=X]
   result<-result[order(range)]
 
@@ -228,25 +200,30 @@ woeCalc <- function(DT, X, Y, binning=NULL, categoricalDefault=FALSE, events=1, 
   DT<-merge(DT, result[, c("range", "WoE"), with=F], by.x="range", by.y="range")
   setnames(DT, "WoE", woeVarName)
   DT[, range:=NULL]
-  print(result)
-  return(DT)
+  if(printResult)
+    print(result)
+  
+  # 返回一个list，包括master DT和result
+  return(list(resultDT=DT, woeVar=result))
 }
 
 
-woeTable <- function(DT, Y, binning=NULL, events=1, nonevents=0){
+autoWoE <- function(DT, Y, binning=NULL, events=1, nonevents=0){
   result<-data.frame()
   tooFew<-c()
   for(name in names(DT)){
+    print(name)
     if(name != Y){
-      newResult<-woeCalc(DT, name, Y, binning = binning, events = events, nonevents = nonevents)
-      if(is.data.frame(newResult)){
-        result<-rbind(result, newResult)
+      newResult<-woeCalc(DT, name, Y, binning = binning, events = events, nonevents = nonevents, printResult = F)
+      if(is.list(newResult)){
+        DT<-newResult$resultDT
+        result<-rbind(result, newResult$woeVar)
       }else{
         tooFew<-append(tooFew, newResult)
       }
     }
   }
-  returnList<-list(infoTable=result, tooFewList=tooFew)
+  returnList<-list(binResult=DT, woeTable=result, tooFewList=tooFew)
   return(returnList)
 }
 

@@ -20,9 +20,10 @@ typeConverter(featuresWideU, c("callBlacklist", "callLaws", "callNetLoanBlank",
                                "cellphoneAuth", "card_tp", "ecpPhoneTag", "ecp_eachother", "hasShCISReport", 
                                "inBlanklist", "highZhimaScore", "inJulixinBlanklist", "inZhimaBlank", "juxinliSuccess",
                                "marry", "longTimeShutdown", "localFriends", "noNeedMobileAuthCheck", "sex", "normalContact", 
-                               "tachEcp", "trustAddr", "trustIP", "flgDPD","FLAG_12_var1"), "factor")
+                               "trustAddr", "trustIP", "flgDPD","FLAG_12_var1"), "factor")
 
 
+typeConverter(featuresWideU, c("tachEcp"), "character")
 
 
 ###################################################################################
