@@ -3,26 +3,32 @@
 
 
 train <- copy(trainData)
-train[, c("addrUsedNum",           "browserUsedNum",        "called5",               "cellphoneAuth",         "ecpNum",
+train[, tachEcp:=as.integer(tachEcp)]
+train[, c("applicantContact", "addrUsedNum",           "browserUsedNum",        "called5",               "cellphoneAuth",         "ecpNum",
           "ecp_eachother",         "highZhimaScore",        "inBlanklist",           "inZhimaBlank",          "ipUsedNum",
           "mateNum",               "noNeedMobileAuthCheck",  "trustAddr",             "trustIP",               "unexpectedApplyTime" ):=NULL
       ]
 # test<-copy(testData)
 # holdout <- copy(holdoutData)
 
+autoBin<-autoWoE(train, "flgDPD")
+write.csv(autoBin$woeTable, paste0(boxdata, "autoBin.csv"))
 
 
-train<-woeCalc(train, "age","flgDPD", binning=c(-Inf, 24, 30, Inf))$resultDT
+#####################################################################################################################
 
-# train<-woeCalc(train, "applicantContact","flgDPD", binning=c(-Inf, -999, 0, 1, Inf))
+train<-woeCalc(train, "age","flgDPD", binning=c(-Inf, 24, 29, Inf))$resultDT
+
 train<-woeCalc(train, "avgMonthCall","flgDPD", binning=c(-Inf, -999, 180, 300, Inf))$resultDT
-# train<-woeCalc(train, "callBlacklist","flgDPD", binning=c(-Inf, -1, Inf))
+# train<-woeCalc(train, "callBlacklist","flgDPD")
+
+# 近6个月申请人与紧急联系人的通话次数
 train<-woeCalc(train, "callEcpNum","flgDPD", binning=c(-Inf, -999, 30, 150, Inf))$resultDT
 # train<-woeCalc(train, "callLaws","flgDPD", binning=c(-Inf, , Inf))
 # train<-woeCalc(train, "callNetLoanBlank","flgDPD", binning=c(-Inf, , Inf))
 # train<-woeCalc(train, "cellphoneAuth","flgDPD", binning=c(-Inf, , Inf))
 train<-woeCalc(train, "childrenNum","flgDPD", binning=c(-Inf, 0, Inf))$resultDT
-train<-woeCalc(train, "currentJobyear","flgDPD", binning=c(-Inf, 0, 2, Inf))$resultDT
+train<-woeCalc(train, "currentJobyear","flgDPD", binning=c(-Inf, 0, Inf))$resultDT
 # train<-woeCalc(train, "ecpPhoneTag","flgDPD", binning=c(-Inf, , Inf))
 # train<-woeCalc(train, "ecp_eachother","flgDPD", binning=c(-Inf, , Inf))
 train<-woeCalc(train, "goOut120","flgDPD", binning=c(-Inf, -999, 0, Inf))$resultDT
@@ -46,7 +52,7 @@ train<-woeCalc(train, "sex","flgDPD")$resultDT
 # train<-woeCalc(train, "shCISMaxOverdual_24month","flgDPD", binning=c(-Inf, -999, Inf))$resultDT
 # train<-woeCalc(train, "shCISOverdualNum_24month","flgDPD", binning=c(-Inf, -999, Inf))$resultDT
 # train<-woeCalc(train, "shCISOverdualNum_3month","flgDPD", binning=c(-Inf, -999, Inf))$resultDT
-# train<-woeCalc(train, "tachEcp","flgDPD", binning=c(-Inf, -999, 150, Inf))
+train<-woeCalc(train, "tachEcp","flgDPD", binning=c(-Inf, -999, 150, Inf))
 train<-woeCalc(train, "workCondition","flgDPD", binning=c(-Inf, -999, Inf))$resultDT
 train<-woeCalc(train, "zhimaScore","flgDPD", binning=c(-Inf, 670, 700, Inf))$resultDT
 train<-woeCalc(train, "tenor","flgDPD", binning=c(-Inf, 3, Inf))$resultDT
@@ -57,7 +63,7 @@ train<-woeCalc(train, "FLAG_12_var1","flgDPD", binning=FLAG12_V1Cate)$resultDT
 
 
 train<-woeCalc(train, "RFM_12_var1","flgDPD", binning=c(-Inf, -999, 50000, Inf))$resultDT
-train<-woeCalc(train, "RFM_12_var2","flgDPD", binning=c(-Inf, -999, 30, 100, Inf))$resultDT
+train<-woeCalc(train, "RFM_12_var2","flgDPD", binning=c(-Inf, -999, 80, Inf))$resultDT
 train<-woeCalc(train, "RFM_12_var29","flgDPD", binning=c(-Inf, -999, 0, Inf))$resultDT
 train<-woeCalc(train, "RFM_12_var30","flgDPD", binning=c(-Inf, -999, 0, Inf))$resultDT
 train<-woeCalc(train, "RFM_12_var55","flgDPD", binning=c(-Inf, -999, 0, Inf))$resultDT
@@ -65,10 +71,10 @@ train<-woeCalc(train, "RFM_12_var56","flgDPD", binning=c(-Inf, -999, 0, Inf))$re
 # train<-woeCalc(train, "RFM_12_var58","flgDPD", binning=c(-Inf, , Inf))
 # train<-woeCalc(train, "RFM_12_var59","flgDPD", binning=c(-Inf, , Inf))
 train<-woeCalc(train, "RFM_6_var1","flgDPD", binning=c(-Inf, -999, 20000, Inf))$resultDT
-train<-woeCalc(train, "RFM_6_var2","flgDPD", binning=c(-Inf, -999, 12, 24, 36, Inf))$resultDT
-train<-woeCalc(train, "RFM_6_var12","flgDPD", binning=c(-Inf, , Inf))$resultDT
-train<-woeCalc(train, "RFM_6_var13","flgDPD", binning=c(-Inf, , Inf))$resultDT
-train<-woeCalc(train, "RFM_6_var14","flgDPD", binning=c(-Inf, , Inf))$resultDT
+train<-woeCalc(train, "RFM_6_var2","flgDPD", binning=c(-Inf, -999, 36, Inf))$resultDT
+train<-woeCalc(train, "RFM_6_var12","flgDPD", binning=c(-Inf, -999, 0, Inf))$resultDT
+train<-woeCalc(train, "RFM_6_var13","flgDPD", binning=c(-Inf, -999, 0, Inf))$resultDT
+train<-woeCalc(train, "RFM_6_var14","flgDPD", binning=c(-Inf, -999, 0, Inf))$resultDT
 train<-woeCalc(train, "RFM_6_var15","flgDPD", binning=c(-Inf, , Inf))$resultDT
 train<-woeCalc(train, "RFM_6_var17","flgDPD", binning=c(-Inf, , Inf))$resultDT
 train<-woeCalc(train, "RFM_6_var18","flgDPD", binning=c(-Inf, , Inf))$resultDT

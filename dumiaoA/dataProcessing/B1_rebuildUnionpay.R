@@ -107,7 +107,8 @@ card12mths<-unionTrxn[daysFromApply<=360 & daysFromApply>0,
                       "RFM_12_var55"=sum(night),
                       "RFM_12_var56"=sum(night*transexpenses),
                       "RFM_12_var58"=sum(pm),
-                      "RFM_12_var59"=sum(pm*transexpenses)
+                      "RFM_12_var59"=sum(pm*transexpenses),
+                      "RFM_h_var2"=max(transtime)
                       ), by=c("financingprojectid","createtime")]
 
 
@@ -122,12 +123,12 @@ unionPayRebuilt[, c("card_tp",
                 "dc_flag",
                 "flag_h_var1",
                 "RFM_56_var1",
-                "RFM_h_var2",
                 "rsk_cluster",
                 "rsk_score" ,
                 "wlp_score"):=NA
                 ]
 unionPayRebuilt[, createtime:=NULL]
+# unionPayRebuilt[, unionPayDerived:=1]
 # names(unionPayRebuilt)<-paste0(names(unionPayRebuilt), ".1")
 # 
 

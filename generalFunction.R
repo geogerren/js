@@ -170,7 +170,12 @@ woeCalc <- function(DT, X, Y, binning=NULL, events=1, nonevents=0, printResult=T
     if(is.factor(independent) | length(table(independent))<10){
       resultCalc[, range:=get(X)]
     }else{
-      resultCalc[, range:=cut_number(independent, 2)]
+      if(sum(independent==Mode(independent))/length(independent)>=0.4){
+        modeX<-Mode(independent)
+        resultCalc[, range:=cut(independent, c(-Inf, modeX, Inf))]
+      }else{
+        resultCalc[, range:=cut_number(independent, 3)]
+      }
     }
   }else if(length(binning)==1){
     resultCalc[, range:=cut_number(independent, binning)]
@@ -208,10 +213,12 @@ woeCalc <- function(DT, X, Y, binning=NULL, events=1, nonevents=0, printResult=T
 }
 
 
-autoWoE <- function(DT, Y, binning=NULL, events=1, nonevents=0){
+autoWoE <- function(DT, Y, binning=NULL, events=1, nonevents=0, exclude=c()){
   result<-data.frame()
   tooFew<-c()
   for(name in names(DT)){
+    if(name %in% exclude)
+      next
     print(name)
     if(name != Y){
       newResult<-woeCalc(DT, name, Y, binning = binning, events = events, nonevents = nonevents, printResult = F)

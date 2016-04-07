@@ -11,3 +11,11 @@ featuresWideU[, RFM_12_var59:=ifelse(!is.na(RFM_12_var59), RFM_12_var59, post12P
 
 
 featuresWideU[, c("zhiceCar", "declareCar", "cardType", "lastMonthOverdrawNum", "post12PMFeeNum", "post12PMFeeAmount"):=NULL]
+
+
+
+featuresWideU[, RFM_h_var2_Derived:=difftime(as.POSIXct(createtime), RFM_h_var2, units = "days")/30] 
+
+featuresWideU[, RFM_h_var2_Derived:=ifelse(RFM_h_var2_Derived<0, 0, RFM_h_var2_Derived)]
+
+featuresWideU[, RFM_h_var2:=NULL]
