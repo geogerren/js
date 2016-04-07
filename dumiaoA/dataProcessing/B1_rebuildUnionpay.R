@@ -69,8 +69,8 @@ card1mth<-unionTrxn[daysFromApply<=30 & daysFromApply>0,
                       "RFM_1_var10"=NA,
                       "RFM_1_var11"=sum(highRisk),
                       "RFM_1_var12"=sum(highRisk*transexpenses),
-                      "RFM_1_var13"=NA,
-                      "RFM_1_var14"=NA
+                      "RFM_1_var13"=sum(multiPlat*transexpenses),
+                      "RFM_1_var14"=sum(multiPlat)
                     ), by=c("financingprojectid","createtime")]
 
 card3mths<-unionTrxn[daysFromApply<=90 & daysFromApply>0,
@@ -87,16 +87,36 @@ card6mths<-unionTrxn[daysFromApply<=180 & daysFromApply>0,
                        "RFM_6_var15"=sum(ifelse(transexpenses>=3000,1,0)),
                        "RFM_6_var17"=sum(highRisk),
                        "RFM_6_var18"=sum(highRisk*transexpenses),
-                       "RFM_6_var19"=NA,
-                       "RFM_6_var20"=NA,
+                       "RFM_6_var19"=sum(multiPlat*transexpenses),
+                       "RFM_6_var20"=sum(multiPlat),
                        "RFM_6_var21"=sum(entertain), 
-                       "FLAG_6_var11"=NA,
-                       "FLAG_6_var12"=NA,
+                       # "FLAG_6_var11"=NA,
+                       # "FLAG_6_var12"=NA,
                        "LOC_6_var12"=NA,
                        "LOC_6_var13"=NA,
                        "LOC_6_var14"=NA,
-                       "MON_6_var1"=NA
+                       "MON_6_var1"=length(unique(month(transtime)))
                      ), by=c("financingprojectid","createtime")]
+
+
+unionTrxnSupp<-copy(unionTrxn)
+unionTrxnSupp[, monthOfTrans:=year(transtime)*100+month(transtime)]
+unionTrxnSupp[, over3000:=ifelse(transexpenses>=3000, 1, 0)]
+card6mthsSupp<-unionTrxnSupp[daysFromApply<=180 & daysFromApply>0, 
+                               .("over3000Total"=sum(over3000),
+                                 "total"=.N), 
+                               by=c("financingprojectid", "monthOfTrans")]
+card6mthsSupp[, over50:=ifelse(over3000Total/total>=0.5, 1, 0)]
+card6mthsSupp[, over95:=ifelse(over3000Total/total>=0.95, 1, 0)]
+card6mthsSupp_pivot<-card6mthsSupp[,
+                                   .("FLAG_6_var11"=sum(over50),
+                                     "FLAG_6_var12"=sum(over95)),
+                                   by="financingprojectid"]
+
+
+card6mths<-merge(card6mths, card6mthsSupp_pivot, by="financingprojectid", all.x=T)
+
+
 
 card12mths<-unionTrxn[daysFromApply<=360 & daysFromApply>0, 
                     .("FLAG_12_var1"=NA,

@@ -9,6 +9,8 @@ featuresWideU[, c("LOC_6_var12","LOC_6_var13", "LOC_6_var14", "dc_flag"):=NULL]
 
 featuresResult<-featureAnalysis(featuresWideU, exclude = c("financingprojectid", "createtime", "card_tp"))
 
+write.csv(featuresResult, paste0(boxdata, "featuresAnal.csv"))
+
 # featureAnalysis(featuresWideU, exclude=c("financingprojectid", "createtime", "callBlacklist", "callLaws", "callNetLoanBlank",
 #                                          "cellphoneAuth", "card_tp", "ecpPhoneTag", "ecp_eachother", "hasShCISReport", 
 #                                          "inBlanklist", "highZhimaScore", "inJulixinBlanklist", "inZhimaBlank", "juxinliSuccess",
@@ -30,9 +32,8 @@ typeConverter(featuresWideU, c("tachEcp"), "integer")
 
 
 ###################################################################################
-trainData <- featuresWideU[flgTest==0&is.na(flgTrainTest),]
-testData <- featuresWideU[flgTest==0&flgTrainTest==1,]
-holdoutData<- featuresWideU[flgTest==1,]
+trainData <- featuresWideU[is.na(flgValidation),]
+validateData<- featuresWideU[flgValidation==1,]
 
 
 imputeResult<-ggImpute(trainData, fullImpute = F, removeMassiveMissing = F)

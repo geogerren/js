@@ -29,9 +29,9 @@ target3[, flgDPD:=ifelse(DPD15in==1, 1, ifelse(DPD8to14in==1|DPD15out==1, -1, 0)
 target3[, c("DPD8to14in90","DPD15out90","DPD15in90"):=NULL]
 target3Final<-target3[flgDPD!=-1,]
 
-k3<-floor(0.80*nrow(target3Final))
-target3Final[1:k3, flgTest:=0]
-target3Final[(k3+1):nrow(target3Final), flgTest:=1]
+# k3<-floor(0.80*nrow(target3Final))
+# target3Final[1:k3, flgTest:=0]
+# target3Final[(k3+1):nrow(target3Final), flgTest:=1]
 
 
 # table(target3$flgDPD)
@@ -64,9 +64,9 @@ target2[, flgDPD:=ifelse(DPD15in==1, 1, ifelse(DPD8to14in==1|DPD15out==1, -1, 0)
 target2[, c("DPD8to14in60","DPD15out60","DPD15in60"):=NULL]
 target2Final<-target2[flgDPD!=-1,]
 
-k2<-floor(0.8*nrow(target2Final))
-target2Final[1:k2, flgTest:=0]
-target2Final[(k2+1):nrow(target2Final), flgTest:=1]
+# k2<-floor(0.8*nrow(target2Final))
+# target2Final[1:k2, flgTest:=0]
+# target2Final[(k2+1):nrow(target2Final), flgTest:=1]
 
 
 
@@ -95,14 +95,14 @@ target1<-ods30DaysPerf[, .("DPD8to14in30"=sum(DPD8to14in30), "DPD15out30"=sum(DP
 target1[, DPD8to14in:=ifelse(DPD8to14in30>0,1,0)]
 target1[, DPD15out:=ifelse(DPD15out30>0,1,0)]
 target1[, DPD15in:=ifelse(DPD15in30>0,1,0)]
-target1[, flgDPD:=ifelse(DPD15in==1, 1, ifelse(DPD8to14in==1|DPD15out==1, -1, 0))]
+target1[, flgDPD:=ifelse(DPD15in==1, 1, ifelse(DPD8to14in==1|DPD15out==1, 1, 0))]
 
 target1[, c("DPD8to14in30","DPD15out30","DPD15in30"):=NULL]
 target1Final<-target1[flgDPD!=-1,]
 
-k1<-floor(0.8*nrow(target1Final))
-target1Final[1:k1, flgTest:=0]
-target1Final[(k1+1):nrow(target1Final), flgTest:=1]
+# k1<-floor(0.8*nrow(target1Final))
+# target1Final[1:k1, flgTest:=0]
+# target1Final[(k1+1):nrow(target1Final), flgTest:=1]
 
 
 # table(target1$flgDPD)
@@ -151,6 +151,6 @@ remove(k1)
 remove(k2)
 remove(k3)
 
-target[project_id %in% sample(target[flgTest==0, ]$project_id, floor(nrow(target[flgTest==0, ])*1/6)), flgTrainTest:=1]
+target[project_id %in% sample(target$project_id, floor(nrow(target)*0.2)), flgValidation:=1]
 
 

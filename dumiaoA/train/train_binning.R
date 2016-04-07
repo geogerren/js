@@ -26,9 +26,23 @@ train<-woeCalc(train, "avgMonthCall","flgDPD", binning=c(-Inf, -999, 180, 300, I
 train<-woeCalc(train, "callEcpNum","flgDPD", binning=c(-Inf, -999, 30, 150, Inf))$resultDT
 # train<-woeCalc(train, "callLaws","flgDPD", binning=c(-Inf, , Inf))
 # train<-woeCalc(train, "callNetLoanBlank","flgDPD", binning=c(-Inf, , Inf))
+
+train[financingprojectid==113187, card_tp:="platinum_card"]
+train[card_tp=="3", card_tp:="golden_card"]
+train[card_tp=="4", card_tp:="platinum_card"]
+train[card_tp=="0", card_tp:="ordinary_card"]
+train<-woeCalc(train, "card_tp","flgDPD")$resultDT
+
 # train<-woeCalc(train, "cellphoneAuth","flgDPD", binning=c(-Inf, , Inf))
+
+
 train<-woeCalc(train, "childrenNum","flgDPD", binning=c(-Inf, 0, Inf))$resultDT
-train<-woeCalc(train, "currentJobyear","flgDPD", binning=c(-Inf, 0, Inf))$resultDT
+
+train<-woeCalc(train, "cnp_score","flgDPD", binning=c(-Inf, , Inf))$resultDT
+train<-woeCalc(train, "cot_cluster","flgDPD", binning=c(-Inf, , Inf))$resultDT
+train<-woeCalc(train, "cot_score","flgDPD", binning=c(-Inf, , Inf))$resultDT
+
+train<-woeCalc(train, "currentJobyear","flgDPD", binning=c(-Inf, 1, Inf))$resultDT
 # train<-woeCalc(train, "ecpPhoneTag","flgDPD", binning=c(-Inf, , Inf))
 # train<-woeCalc(train, "ecp_eachother","flgDPD", binning=c(-Inf, , Inf))
 train<-woeCalc(train, "goOut120","flgDPD", binning=c(-Inf, -999, 0, Inf))$resultDT
@@ -100,10 +114,7 @@ train<-woeCalc(train, "RFM_1_var11","flgDPD", binning=c(-Inf, , Inf))$resultDT
 train<-woeCalc(train, "RFM_1_var12","flgDPD", binning=c(-Inf, , Inf))$resultDT
 train<-woeCalc(train, "RFM_1_var13","flgDPD", binning=c(-Inf, , Inf))$resultDT
 train<-woeCalc(train, "RFM_1_var14","flgDPD", binning=c(-Inf, , Inf))$resultDT
-train<-woeCalc(train, "card_tp","flgDPD", binning=c(-Inf, , Inf))$resultDT
-train<-woeCalc(train, "cnp_score","flgDPD", binning=c(-Inf, , Inf))$resultDT
-train<-woeCalc(train, "cot_cluster","flgDPD", binning=c(-Inf, , Inf))$resultDT
-train<-woeCalc(train, "cot_score","flgDPD", binning=c(-Inf, , Inf))$resultDT
+
 train<-woeCalc(train, "flag_h_var1","flgDPD", binning=c(-Inf, , Inf))$resultDT
 train<-woeCalc(train, "RFM_56_var1","flgDPD", binning=c(-Inf, , Inf))$resultDT
 train<-woeCalc(train, "RFM_h_var2","flgDPD", binning=c(-Inf, , Inf))$resultDT

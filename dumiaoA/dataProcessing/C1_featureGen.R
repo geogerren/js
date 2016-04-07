@@ -139,7 +139,7 @@ featureGen(features, 10019, 1000063, "shCISLoanQueryNo_3month")
 ##################################################################################
 # 加上target
 featuresWide<-dcast.data.table(features, financingprojectid + createtime ~ key, fun.agg=min, value.var = "value")
-featuresWide<-merge(featuresWide, target[, c("project_id","Loan_Date","tenor","flgDPD","flgTest","flgTrainTest"), with=F], by.x="financingprojectid", by.y="project_id")
+featuresWide<-merge(featuresWide, target[, c("project_id","Loan_Date","tenor","flgDPD","flgValidation"), with=F], by.x="financingprojectid", by.y="project_id")
 # test<-featureAnalysis(featuresWideU, c("financingprojectid","NA","createtime","Loan_Date","flgDPD","flgTest"))
 featuresWide[, createtime:=as.POSIXct(createtime)]
 featuresWide[, "NA":=NULL]
