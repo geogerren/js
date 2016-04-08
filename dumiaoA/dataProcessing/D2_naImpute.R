@@ -51,12 +51,16 @@ validateData<- featuresWideU[flgValidation==1,]
 
 
 imputeResult<-ggImpute(trainData, fullImpute = F, removeMassiveMissing = F)
+testImpute<-ggImpute(validateData, fullImpute = F, removeMassiveMissing = F)
 
-featuresWideU[, imputeResult$removeList:=NULL]
-
+# featuresWideU[, imputeResult$removeList:=NULL]
 
 
 
 
 
 write.csv(trainData, paste0(boxdata, "train.csv"))
+
+write.csv(validateData, paste0(boxdata, "test.csv"))
+
+

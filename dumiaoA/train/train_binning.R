@@ -17,35 +17,11 @@ write.csv(autoBin$woeTable, paste0(boxdata, "autoBin.csv"))
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+#####################################################################################################################
+train<-woeCalc(train, "RFM_12_var29","flgDPD", binning=c(-Inf, -999, 0, Inf))$resultDT
+train<-woeCalc(train, "RFM_1_var2","flgDPD", binning=c(-Inf, -999,  2000, Inf))$resultDT
+train<-woeCalc(train, "RFM_1_var4","flgDPD", binning=c(-Inf, -999, 0, Inf))$resultDT
+train<-woeCalc(train, "RFM_1_var9","flgDPD", binning=c(-Inf, , Inf))$resultDT
 
 
 #####################################################################################################################
