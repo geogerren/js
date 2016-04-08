@@ -15,6 +15,39 @@ autoBin<-autoWoE(train, "flgDPD")
 write.csv(autoBin$woeTable, paste0(boxdata, "autoBin.csv"))
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #####################################################################################################################
 
 train<-woeCalc(train, "age","flgDPD", binning=c(-Inf, 24, 29, Inf))$resultDT
@@ -27,10 +60,7 @@ train<-woeCalc(train, "callEcpNum","flgDPD", binning=c(-Inf, -999, 30, 150, Inf)
 # train<-woeCalc(train, "callLaws","flgDPD", binning=c(-Inf, , Inf))
 # train<-woeCalc(train, "callNetLoanBlank","flgDPD", binning=c(-Inf, , Inf))
 
-train[financingprojectid==113187, card_tp:="platinum_card"]
-train[card_tp=="3", card_tp:="golden_card"]
-train[card_tp=="4", card_tp:="platinum_card"]
-train[card_tp=="0", card_tp:="ordinary_card"]
+
 train<-woeCalc(train, "card_tp","flgDPD")$resultDT
 
 # train<-woeCalc(train, "cellphoneAuth","flgDPD", binning=c(-Inf, , Inf))

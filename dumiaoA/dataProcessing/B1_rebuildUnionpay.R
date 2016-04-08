@@ -33,21 +33,17 @@ unionTrxn[, pm:=ifelse(mcc %in% c('6513','物业管理'), 1, 0)]
 unionTrxn[, entertain:=ifelse(mcc %in% c('7932','7933','7993','7994','7995','宾馆餐饮娱乐优惠类','饮酒场所','电影院'
                                          ,'洗浴按摩','歌舞厅KTV','戏剧演出','其他娱乐服务','乐队文艺表演'), 1, 0)]
 
-unionTrxn[, highRisk:=ifelse(
-  (!is.na(str_locate(merchantname, "旗舰店")[1])
-   |!is.na(str_locate(merchantname, "专营店")[1])
-   |!is.na(str_locate(merchantname, "信息技术")[1])
-   |!is.na(str_locate(merchantname, "数据")[1]))
-  & (is.na(str_locate(merchantname, "奇漾")[1])
-     &is.na(str_locate(merchantname, "京东")[1])
-     &is.na(str_locate(merchantname, "当当网")[1]))
-  & mcc=='5411', 1, 0)]
+unionTrxn$highRisk<-ifelse(
+  (!is.na(str_match(unionTrxn$merchantname, "旗舰店"))
+   |!is.na(str_match(unionTrxn$merchantname, "专营店"))
+   |!is.na(str_match(unionTrxn$merchantname, "信息技术"))
+   |!is.na(str_match(unionTrxn$merchantname, "数据")))
+  & (is.na(str_match(unionTrxn$merchantname, "奇漾"))
+     &is.na(str_match(unionTrxn$merchantname, "京东"))
+     &is.na(str_match(unionTrxn$merchantname, "当当网")))
+  & unionTrxn$mcc=='5411', 1, 0)
 
-unionTrxn[, multiPlat:=ifelse(!is.na(str_locate(merchantname, "身份验证默认商户")[1])
-                              |!is.na(str_locate(merchantname, "掌众科技")[1])
-                              |!is.na(str_locate(merchantname, "钱袋宝")[1])
-                              |!is.na(str_locate(merchantname, "钱袋网")[1])
-                              |!is.na(str_locate(merchantname, "夸氪金融")[1]), 1, 0)]
+unionTrxn[, multiPlat:=ifelse(merchantname %in% c("身份验证默认商户", "掌众科技", "钱袋宝", "钱袋网", "夸氪金融"), 1, 0)]
 
 unionTrxn[, night:=ifelse(hour(transtime) %in% c(1,2,3,4,5), 1, 0)]
 
