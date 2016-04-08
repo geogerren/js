@@ -21,12 +21,12 @@ featuresWideU[, c("LOC_6_var12","LOC_6_var13", "LOC_6_var14", "dc_flag"):=NULL]
 # 
 # write.csv(featuresResult, paste0(boxdata, "featuresAnal.csv"))
 
-# featureAnalysis(featuresWideU, exclude=c("financingprojectid", "createtime", "callBlacklist", "callLaws", "callNetLoanBlank",
-#                                          "cellphoneAuth", "card_tp", "ecpPhoneTag", "ecp_eachother", "hasShCISReport", 
-#                                          "inBlanklist", "highZhimaScore", "inJulixinBlanklist", "inZhimaBlank", "juxinliSuccess",
-#                                          "marry", "longTimeShutdown", "localFriends", "noNeedMobileAuthCheck", "sex", "normalContact", 
-#                                          "tachEcp", "trustAddr", "trustIP", "flgDPD", "FLAG_12_var1","LOC_6_var12","LOC_6_var13"
-#                                          ,"LOC_6_var14", "dc_flag", "flgTest", "flgTrainTest"))
+featureAnalysis(featuresWideU, exclude=c("financingprojectid", "createtime", "callBlacklist", "callLaws", "callNetLoanBlank",
+                                         "cellphoneAuth", "card_tp", "ecpPhoneTag", "ecp_eachother", "hasShCISReport",
+                                         "inBlanklist", "highZhimaScore", "inJulixinBlanklist", "inZhimaBlank", "juxinliSuccess",
+                                         "marry", "longTimeShutdown", "localFriends", "noNeedMobileAuthCheck", "sex", "normalContact",
+                                         "tachEcp", "trustAddr", "trustIP", "flgDPD", "FLAG_12_var1","LOC_6_var12","LOC_6_var13"
+                                         ,"LOC_6_var14", "dc_flag", "flgTest", "flgTrainTest"))
 
 
 

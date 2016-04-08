@@ -52,85 +52,81 @@ unionTrxn[, night:=ifelse(hour(transtime) %in% c(1,2,3,4,5), 1, 0)]
 unionTrxn[, daysFromApply:=difftime(createtime,transtime,unit="day")]
 
 ################## aggregation
-card1mth<-unionTrxn[daysFromApply<=30 & daysFromApply>0, 
-                    .("RFM_1_var1"=.N,
-                      "RFM_1_var2"=sum(transexpenses),
-                      "RFM_1_var3"=sum(withdraw*transexpenses),
-                      "RFM_1_var4"=sum(withdraw),
+
+
+
+unionPayRebuilt<-unionTrxn[daysFromApply>0, 
+                    .("RFM_1_var1"=sum(ifelse(daysFromApply<=30, 1, 0), na.rm=T),
+                      "RFM_1_var2"=sum(ifelse(daysFromApply<=30, transexpenses, 0), na.rm=T),
+                      "RFM_1_var3"=sum(ifelse(daysFromApply<=30, withdraw*transexpenses, 0), na.rm=T),
+                      "RFM_1_var4"=sum(ifelse(daysFromApply<=30, withdraw, 0), na.rm=T),
                       "RFM_1_var5"=NA,
                       "RFM_1_var6"=NA,
                       "RFM_1_var7"=NA,
                       "RFM_1_var8"=NA,
                       "RFM_1_var9"=NA,
                       "RFM_1_var10"=NA,
-                      "RFM_1_var11"=sum(highRisk),
-                      "RFM_1_var12"=sum(highRisk*transexpenses),
-                      "RFM_1_var13"=sum(multiPlat*transexpenses),
-                      "RFM_1_var14"=sum(multiPlat)
+                      "RFM_1_var11"=sum(ifelse(daysFromApply<=30, highRisk, 0), na.rm=T),
+                      "RFM_1_var12"=sum(ifelse(daysFromApply<=30, highRisk*transexpenses, 0), na.rm=T),
+                      "RFM_1_var13"=sum(ifelse(daysFromApply<=30, multiPlat*transexpenses, 0), na.rm=T),
+                      "RFM_1_var14"=sum(ifelse(daysFromApply<=30, multiPlat, 0), na.rm=T),
+                      
+                      "RFM_3_var6"=sum(ifelse(daysFromApply<=90, night*entertain, 0), na.rm=T),
+                      "RFM_3_var7"=sum(ifelse(daysFromApply<=90, night*entertain*transexpenses, 0), na.rm=T),
+                      
+                      "RFM_6_var1"=sum(ifelse(daysFromApply<=180, transexpenses, 0), na.rm=T),
+                      "RFM_6_var2"=sum(ifelse(daysFromApply<=180, 1, 0), na.rm=T),
+                      "RFM_6_var12"=sum(ifelse(daysFromApply<=180, food, 0), na.rm=T),
+                      "RFM_6_var13"=sum(ifelse(daysFromApply<=180, food*transexpenses, 0), na.rm=T),
+                      "RFM_6_var14"=sum(ifelse(transexpenses>=3000 & daysFromApply<=180,1,0)*transexpenses, na.rm=T),
+                      "RFM_6_var15"=sum(ifelse(transexpenses>=3000 & daysFromApply<=180,1,0), na.rm=T),
+                      "RFM_6_var17"=sum(ifelse(daysFromApply<=180, highRisk, 0), na.rm=T),
+                      "RFM_6_var18"=sum(ifelse(daysFromApply<=180, highRisk*transexpenses, 0), na.rm=T),
+                      "RFM_6_var19"=sum(ifelse(daysFromApply<=180, multiPlat*transexpenses, 0), na.rm=T),
+                      "RFM_6_var20"=sum(ifelse(daysFromApply<=180, multiPlat, 0), na.rm=T),
+                      "RFM_6_var21"=sum(ifelse(daysFromApply<=180, entertain, 0), na.rm=T), 
+                      # "FLAG_6_var11"=NA,
+                      # "FLAG_6_var12"=NA,
+                      "LOC_6_var12"=NA,
+                      "LOC_6_var13"=NA,
+                      "LOC_6_var14"=NA,
+                      "MON_6_var1"=length(unique(month(transtime))),
+                      
+                      "FLAG_12_var1"=NA,
+                      "RFM_12_var1"=sum(transexpenses, na.rm=T),
+                      "RFM_12_var2"=.N,
+                      "RFM_12_var29"=sum(withdraw, na.rm=T),
+                      "RFM_12_var30"=sum(withdraw*transexpenses, na.rm=T),
+                      "RFM_12_var55"=sum(night, na.rm=T),
+                      "RFM_12_var56"=sum(night*transexpenses, na.rm=T),
+                      "RFM_12_var58"=sum(pm, na.rm=T),
+                      "RFM_12_var59"=sum(pm*transexpenses, na.rm=T),
+                      "RFM_h_var2"=max(as.POSIXct(transtime), na.rm=T)                      
+                      
                     ), by=c("financingprojectid","createtime")]
 
-card3mths<-unionTrxn[daysFromApply<=90 & daysFromApply>0,
-                     .("RFM_3_var6"=sum(night*entertain),
-                       "RFM_3_var7"=sum(night*entertain*transexpenses)
-                       ), by=c("financingprojectid","createtime")]
 
-card6mths<-unionTrxn[daysFromApply<=180 & daysFromApply>0, 
-                     .("RFM_6_var1"=sum(transexpenses),
-                       "RFM_6_var2"=.N,
-                       "RFM_6_var12"=sum(food),
-                       "RFM_6_var13"=sum(food*transexpenses),
-                       "RFM_6_var14"=sum(ifelse(transexpenses>=3000,1,0)*transexpenses),
-                       "RFM_6_var15"=sum(ifelse(transexpenses>=3000,1,0)),
-                       "RFM_6_var17"=sum(highRisk),
-                       "RFM_6_var18"=sum(highRisk*transexpenses),
-                       "RFM_6_var19"=sum(multiPlat*transexpenses),
-                       "RFM_6_var20"=sum(multiPlat),
-                       "RFM_6_var21"=sum(entertain), 
-                       # "FLAG_6_var11"=NA,
-                       # "FLAG_6_var12"=NA,
-                       "LOC_6_var12"=NA,
-                       "LOC_6_var13"=NA,
-                       "LOC_6_var14"=NA,
-                       "MON_6_var1"=length(unique(month(transtime)))
-                     ), by=c("financingprojectid","createtime")]
 
 
 unionTrxnSupp<-copy(unionTrxn)
 unionTrxnSupp[, monthOfTrans:=year(transtime)*100+month(transtime)]
 unionTrxnSupp[, over3000:=ifelse(transexpenses>=3000, 1, 0)]
-card6mthsSupp<-unionTrxnSupp[daysFromApply<=180 & daysFromApply>0, 
-                               .("over3000Total"=sum(over3000),
-                                 "total"=.N), 
-                               by=c("financingprojectid", "monthOfTrans")]
+card6mthsSupp<-unionTrxnSupp[daysFromApply>0, 
+                             .("over3000Total"=sum(ifelse(daysFromApply<=180, over3000, 0), na.rm = T),
+                               "total"=sum(ifelse(daysFromApply<=180, 1, 0), na.rm=T)), 
+                             by=c("financingprojectid", "monthOfTrans")]
 card6mthsSupp[, over50:=ifelse(over3000Total/total>=0.5, 1, 0)]
 card6mthsSupp[, over95:=ifelse(over3000Total/total>=0.95, 1, 0)]
 card6mthsSupp_pivot<-card6mthsSupp[,
-                                   .("FLAG_6_var11"=sum(over50),
-                                     "FLAG_6_var12"=sum(over95)),
+                                   .("FLAG_6_var11"=sum(over50, na.rm = T),
+                                     "FLAG_6_var12"=sum(over95, na.rm = T)),
                                    by="financingprojectid"]
 
 
-card6mths<-merge(card6mths, card6mthsSupp_pivot, by="financingprojectid", all.x=T)
+unionPayRebuilt<-merge(unionPayRebuilt, card6mthsSupp_pivot, by="financingprojectid", all.x=T)
 
 
 
-card12mths<-unionTrxn[daysFromApply<=360 & daysFromApply>0, 
-                    .("FLAG_12_var1"=NA,
-                      "RFM_12_var1"=sum(transexpenses),
-                      "RFM_12_var2"=.N,
-                      "RFM_12_var29"=sum(withdraw),
-                      "RFM_12_var30"=sum(withdraw*transexpenses),
-                      "RFM_12_var55"=sum(night),
-                      "RFM_12_var56"=sum(night*transexpenses),
-                      "RFM_12_var58"=sum(pm),
-                      "RFM_12_var59"=sum(pm*transexpenses),
-                      "RFM_h_var2"=max(transtime)
-                      ), by=c("financingprojectid","createtime")]
-
-
-unionPayRebuilt<-merge(card12mths, card6mths, by=c("financingprojectid","createtime"), all.x=T)
-unionPayRebuilt<-merge(unionPayRebuilt, card3mths, by=c("financingprojectid","createtime"), all.x=T)
-unionPayRebuilt<-merge(unionPayRebuilt, card1mth, by=c("financingprojectid","createtime"), all.x=T)
 
 unionPayRebuilt[, c("card_tp",
                 "cnp_score",

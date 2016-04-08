@@ -2,6 +2,7 @@ source("E:/Seafiles/Jimu/Code/js/generalFunction.R")
 box <- "E:/Seafiles/Jimu/Data/adhoc/"
 boxdata <- "E:/Seafiles/Jimu/Data/"
 
+# general
 library(RMySQL)
 library(data.table)
 # library(reshape2) # for melt and cast
@@ -23,6 +24,13 @@ library(smbinning)
 
 # Model validation
 library(hmeasure)
+
+# connect with SAS
+# library(sas7bdat)
+library(foreign)
+# library(SASxport)
+
+
 
 # Jimu data queries
 drv <- dbDriver("MySQL")
