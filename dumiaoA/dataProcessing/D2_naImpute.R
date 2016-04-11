@@ -61,11 +61,11 @@ testImpute<-ggImpute(validateData, fullImpute = F, removeMassiveMissing = F)
 
 
 foreign::write.foreign(trainData, paste0(boxdata, "train.txt"),paste0(boxdata, "train.sas"),package = "SAS")
-foreign::write.foreign(trainData, paste0(boxdata, "test.txt"),paste0(boxdata, "test.sas"),package = "SAS")
+foreign::write.foreign(validateData, paste0(boxdata, "test.txt"),paste0(boxdata, "test.sas"),package = "SAS")
 
 
-# write.csv(trainData, paste0(boxdata, "train.csv"))
-# 
-# write.csv(validateData, paste0(boxdata, "test.csv"))
-# 
+write.csv(trainData, paste0(boxdata, "train.csv"))
+
+write.csv(validateData, paste0(boxdata, "test.csv"))
+
 

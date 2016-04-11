@@ -45,8 +45,21 @@ featureGen <- function(DT, modid, indexid, targetText, seqParam=1) {
 
 
 # 造个scoreband放在新的column里
-banding <- function(DT, columnValue, columnBand, bands=seq(0, 1, 0.1)){
-  DT[, eval(columnBand):=as.integer(cut(get(columnValue), quantile(get(columnValue), probs=bands, na.rm=T), include.lowest=TRUE))]
+# banding <- function(DT, columnValue, columnBand, bands=seq(0, 1, 0.1)){
+#   DT[, eval(columnBand):=as.integer(cut(get(columnValue), quantile(get(columnValue), probs=bands, na.rm=T), include.lowest=TRUE))]
+# }
+
+grouping <- function(dataVector, groups=10){
+  total <- length(dataVector)
+  rankVector <- rank(as.numeric(dataVector), ties.method = "min")
+  groupVector <- ceiling((rankVector * groups)/(total+1))
+  midFrame <- data.table(cbind(dataVector, groupVector))
+  groupMax <- midFrame[, 
+                       .("groupMax"=max(dataVector)),
+                       by="groupVector"]
+  midFrame <- merge(midFrame, groupMax, by="groupVector")
+  midFrame <- midFrame[!duplicated(dataVector),]
+  return(midFrame[, c("dataVector", "groupMax"), with=F])
 }
 
 # 拉平data.table 
@@ -167,44 +180,46 @@ woeCalc <- function(DT, X, Y, binning=NULL, events=1, nonevents=0, printResult=T
   resultCalc<-DT[, c(X,Y), with=F]
   independent<-unlist(DT[, X, with=F])
   if(is.null(binning)){
-    if(is.factor(independent) | length(table(independent))<10){
-      resultCalc[, range:=get(X)]
+    if(is.factor(independent)){
+      resultCalc[, maxValue:=get(X)]
     }else{
-      if(sum(independent==Mode(independent))/length(independent)>=0.4){
-        modeX<-Mode(independent)
-        resultCalc[, range:=cut(independent, c(-Inf, modeX, Inf))]
-      }else{
-        resultCalc[, range:=cut_number(independent, 3)]
-      }
+      groupsDF <- grouping(independent, groups = 10)
+      resultCalc <- merge(resultCalc, groupsDF, by.x=X, by.y="dataVector", all.x=T)
+      setnames(resultCalc, "groupMax", "maxValue")
     }
   }else if(length(binning)==1){
-    resultCalc[, range:=cut_number(independent, binning)]
+    # 用于numeric的分组数自定义分组
+    groupsDF <- grouping(independent, groups = binning)
+    resultCalc <- merge(resultCalc, groupsDF, by.x=X, by.y="dataVector", all.x=T)
+    setnames(resultCalc, "groupMax", "maxValue")
   }else if(is.data.frame(binning)){
-    names(binning)<-c("range", "value")
+    # 用于factor的枚举自定义分组
+    names(binning)<-c("maxValue", "value")
     binning[, value:=as.character(value)]
     resultCalc[, X:=as.character(get(X)), with=F]
     resultCalc<-merge(resultCalc, binning, by.x=X, by.y="value", all.x=T)
   }else{
-    resultCalc[, range:=cut(independent, binning)]
+    # 用于numeric的断点自定义分组
+    resultCalc[, maxValue:=cut(independent, binning)]
   }
   resultCalc[, isEvents:=ifelse(get(Y)==events, 1, 0)]
   resultCalc[, isNonEvents:=ifelse(get(Y)==nonevents, 1, 0)]
   result<-resultCalc[, .("TotalCnt"=.N, 
                          "EventsCnt"=sum(isEvents), 
                          "NonEventsCnt"=sum(isNonEvents)), 
-                     by="range"]
+                     by="maxValue"]
   result[, EventsPctg:=EventsCnt/sum(EventsCnt)]
   result[, NonEventsPctg:=NonEventsCnt/sum(NonEventsCnt)]
   result[, WoE:=log(EventsPctg/NonEventsPctg)]
   result[, IV:=sum((EventsPctg-NonEventsPctg)*WoE)]
   result[, varName:=X]
-  result<-result[order(range)]
+  result<-result[order(maxValue)]
 
   # 把woe放进原data frame
-  DT<-cbind(DT, resultCalc[, "range", with=F])
-  DT<-merge(DT, result[, c("range", "WoE"), with=F], by.x="range", by.y="range")
+  DT<-cbind(DT, resultCalc[, "maxValue", with=F])
+  DT<-merge(DT, result[, c("maxValue", "WoE"), with=F], by.x="maxValue", by.y="maxValue")
   setnames(DT, "WoE", woeVarName)
-  DT[, range:=NULL]
+  DT[, maxValue:=NULL]
   if(printResult)
     print(result)
   
