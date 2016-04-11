@@ -167,7 +167,7 @@ printTable <- function(DT){
     print(table(DT[, name, with=F]))
   }
 }
-##############################################WoE计算
+############################################## WoE理论系列
 # categoricalDefault set to TRUE if want to automatically bin by the factor levels
 # Sample binning data table: data.table(1, c(1,2,3))
 woeCalc <- function(DT, X, Y, binning=NULL, events=1, nonevents=0, printResult=T){
@@ -250,6 +250,9 @@ autoWoE <- function(DT, Y, binning=NULL, events=1, nonevents=0, exclude=c()){
 }
 
 
+woeAssign <- function(DT, X, binningDF){
+  
+}
 
 ############## Impute
 # table()的GUI版本
