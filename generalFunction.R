@@ -182,32 +182,38 @@ woeCalc <- function(DT, X, Y, binning=NULL, events=1, nonevents=0, printResult=T
   if(is.null(binning)){
     if(is.factor(independent)){
       resultCalc[, maxValue:=get(X)]
+      resultCalc[, type:="categorical"]
     }else{
       groupsDF <- grouping(independent, groups = 10)
       resultCalc <- merge(resultCalc, groupsDF, by.x=X, by.y="dataVector", all.x=T)
       setnames(resultCalc, "groupMax", "maxValue")
+      resultCalc[, type:="continuous"]
     }
   }else if(length(binning)==1){
     # 用于numeric的分组数自定义分组
     groupsDF <- grouping(independent, groups = binning)
     resultCalc <- merge(resultCalc, groupsDF, by.x=X, by.y="dataVector", all.x=T)
     setnames(resultCalc, "groupMax", "maxValue")
+    resultCalc[, type:="continuous"]
   }else if(is.data.frame(binning)){
     # 用于factor的枚举自定义分组
     names(binning)<-c("maxValue", "value")
     binning[, value:=as.character(value)]
     resultCalc[, X:=as.character(get(X)), with=F]
     resultCalc<-merge(resultCalc, binning, by.x=X, by.y="value", all.x=T)
+    resultCalc[, type:="categorical"]
   }else{
     # 用于numeric的断点自定义分组
     resultCalc[, maxValue:=cut(independent, binning)]
+    resultCalc[, type:="continuous"]
   }
+  resultCalc[, maxValue:=as.character(maxValue)]
   resultCalc[, isEvents:=ifelse(get(Y)==events, 1, 0)]
   resultCalc[, isNonEvents:=ifelse(get(Y)==nonevents, 1, 0)]
   result<-resultCalc[, .("TotalCnt"=.N, 
                          "EventsCnt"=sum(isEvents), 
                          "NonEventsCnt"=sum(isNonEvents)), 
-                     by="maxValue"]
+                     by=c("maxValue","type")]
   result[, EventsPctg:=EventsCnt/sum(EventsCnt)]
   result[, NonEventsPctg:=NonEventsCnt/sum(NonEventsCnt)]
   result[, WoE:=log(EventsPctg/NonEventsPctg)]
@@ -245,14 +251,33 @@ autoWoE <- function(DT, Y, binning=NULL, events=1, nonevents=0, exclude=c()){
       }
     }
   }
+  setorderv(result, c("varName", "maxValue"), c(1, -1))
   returnList<-list(binResult=DT, woeTable=result, tooFewList=tooFew)
   return(returnList)
 }
 
-
+# binningDF requires type, varName, WoE at least
 woeAssign <- function(DT, X, binningDF){
-  
+  assignWoE <- binningDF[varName==X]
+  woeTransName <- paste0("w_", X)
+  if(nrow(assignWoE)==0)
+    return("Not a valid variable!")
+  if(assignWoE$type[1]=="continuous"){
+    assignWoE[, maxValue:=as.numeric(maxValue)]
+    setorderv(assignWoE, "maxValue", -1)
+    for(i in 1:nrow(assignWoE)){
+      DT[get(X) <= assignWoE[i,]$maxValue, woeTransName:=assignWoE[i,]$WoE, with=F]
+    }
+  }else{
+    for(i in 1:nrow(assignWoE)){
+      DT[get(X) == assignWoE[i,]$maxValue, woeTransName:=assignWoE[i,]$WoE, with=F]
+    }
+  }
+  return(DT)
 }
+
+
+
 
 ############## Impute
 # table()的GUI版本

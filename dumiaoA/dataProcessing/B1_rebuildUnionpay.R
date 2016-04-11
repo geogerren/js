@@ -90,8 +90,14 @@ unionPayRebuilt<-unionTrxn[daysFromApply>0,
                       "LOC_6_var12"=NA,
                       "LOC_6_var13"=NA,
                       "LOC_6_var14"=NA,
-                      "MON_6_var1"=length(unique(month(transtime))),
                       
+                      "MON_6_var1_1"=sum(ifelse(daysFromApply<=30, 1, 0), na.rm=T),
+                      "MON_6_var1_2"=sum(ifelse(daysFromApply<=60 & daysFromApply>30, 1, 0), na.rm=T),
+                      "MON_6_var1_3"=sum(ifelse(daysFromApply<=90 & daysFromApply>60, 1, 0), na.rm=T),
+                      "MON_6_var1_4"=sum(ifelse(daysFromApply<=120 & daysFromApply>90, 1, 0), na.rm=T),
+                      "MON_6_var1_5"=sum(ifelse(daysFromApply<=150 & daysFromApply>120, 1, 0), na.rm=T),
+                      "MON_6_var1_6"=sum(ifelse(daysFromApply<=180 & daysFromApply>150, 1, 0), na.rm=T),
+
                       "FLAG_12_var1"=NA,
                       "RFM_12_var1"=sum(transexpenses, na.rm=T),
                       "RFM_12_var2"=.N,
@@ -105,8 +111,14 @@ unionPayRebuilt<-unionTrxn[daysFromApply>0,
                       
                     ), by=c("financingprojectid","createtime")]
 
-
-
+unionPayRebuilt[, MON_6_var1:=
+                  ifelse(MON_6_var1_1>0,1,0)+
+                  ifelse(MON_6_var1_2>0,1,0)+
+                  ifelse(MON_6_var1_3>0,1,0)+
+                  ifelse(MON_6_var1_4>0,1,0)+
+                  ifelse(MON_6_var1_5>0,1,0)+
+                  ifelse(MON_6_var1_6>0,1,0)]
+unionPayRebuilt[, c("MON_6_var1_1","MON_6_var1_2","MON_6_var1_3","MON_6_var1_4","MON_6_var1_5","MON_6_var1_6"):=NULL]
 
 unionTrxnSupp<-copy(unionTrxn)
 unionTrxnSupp[, monthOfTrans:=year(transtime)*100+month(transtime)]
