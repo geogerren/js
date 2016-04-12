@@ -233,8 +233,7 @@ woeCalc <- function(DT, X, Y, binning=NULL, events=1, nonevents=0, printResult=T
   return(list(resultDT=DT, woeVar=result))
 }
 
-
-autoWoE <- function(DT, Y, binning=NULL, events=1, nonevents=0, exclude=c()){
+woeAutoBin <- function(DT, Y, binning=NULL, events=1, nonevents=0, exclude=c()){
   result<-data.frame()
   tooFew<-c()
   for(name in names(DT)){
@@ -260,8 +259,10 @@ autoWoE <- function(DT, Y, binning=NULL, events=1, nonevents=0, exclude=c()){
 woeAssign <- function(DT, X, binningDF){
   assignWoE <- binningDF[varName==X]
   woeTransName <- paste0("w_", X)
-  if(nrow(assignWoE)==0)
-    return("Not a valid variable!")
+  if(nrow(assignWoE)==0){
+    print(paste0(X, " is not in binning list!"))
+    return(DT)
+  }
   if(assignWoE$type[1]=="continuous"){
     assignWoE[, maxValue:=as.numeric(maxValue)]
     setorderv(assignWoE, "maxValue", -1)
@@ -276,7 +277,13 @@ woeAssign <- function(DT, X, binningDF){
   return(DT)
 }
 
-
+woeAssignAuto <- function(DT, binningDF){
+  for(name in names(DT)){
+    print(paste0("Assigning WoE to ", name))
+    DT <- woeAssign(DT, name, binningDF)
+  }
+  return(DT)
+}
 
 
 ############## Impute
