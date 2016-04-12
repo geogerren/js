@@ -102,7 +102,7 @@ featureAnalysis <- function(DT, exclude, cateConv=F) {
         DT[, varName:=as.factor(get(varName)), with=F]
       }
       oneVar<-unlist(DT[, varName, with=F])
-      if(typeof(oneVar) %in% c("double","integer")){
+      if(typeof(oneVar) %in% c("double","integer") & !is.factor(oneVar)){
         newRow<-data.frame(varName, 
                            typeof(oneVar),
                            length(oneVar), 
@@ -186,6 +186,7 @@ woeCalc <- function(DT, X, Y, binning=NULL, events=1, nonevents=0, printResult=T
     }else{
       groupsDF <- grouping(independent, groups = 10)
       resultCalc <- merge(resultCalc, groupsDF, by.x=X, by.y="dataVector", all.x=T)
+      
       setnames(resultCalc, "groupMax", "maxValue")
       resultCalc[, type:="continuous"]
     }
@@ -193,6 +194,7 @@ woeCalc <- function(DT, X, Y, binning=NULL, events=1, nonevents=0, printResult=T
     # 用于numeric的分组数自定义分组
     groupsDF <- grouping(independent, groups = binning)
     resultCalc <- merge(resultCalc, groupsDF, by.x=X, by.y="dataVector", all.x=T)
+    
     setnames(resultCalc, "groupMax", "maxValue")
     resultCalc[, type:="continuous"]
   }else if(is.data.frame(binning)){
@@ -204,7 +206,13 @@ woeCalc <- function(DT, X, Y, binning=NULL, events=1, nonevents=0, printResult=T
     resultCalc[, type:="categorical"]
   }else{
     # 用于numeric的断点自定义分组
-    resultCalc[, maxValue:=cut(independent, binning)]
+    binDF <- data.table(value=independent, range=cut(independent, binning))
+    binDFMax <- binDF[, .("groupMax"=max(value)), by="range"]
+    binDF <- merge(binDF, binDFMax, by="range")
+    binDF <- binDF[!duplicated(value),]
+    resultCalc <- merge(resultCalc, binDF[, c("value", "groupMax"), with=F], by.x=X, by.y="value")
+    
+    setnames(resultCalc, "groupMax", "maxValue")
     resultCalc[, type:="continuous"]
   }
   resultCalc[, maxValue:=as.character(maxValue)]

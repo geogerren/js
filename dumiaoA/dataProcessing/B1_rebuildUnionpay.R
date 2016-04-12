@@ -33,6 +33,7 @@ unionTrxn[, pm:=ifelse(mcc %in% c('6513','物业管理'), 1, 0)]
 unionTrxn[, entertain:=ifelse(mcc %in% c('7932','7933','7993','7994','7995','宾馆餐饮娱乐优惠类','饮酒场所','电影院'
                                          ,'洗浴按摩','歌舞厅KTV','戏剧演出','其他娱乐服务','乐队文艺表演'), 1, 0)]
 
+# 高危：带旗舰店专营店信息技术字样，无奇漾京东当当网字样，mcc=5411
 unionTrxn$highRisk<-ifelse(
   (!is.na(str_match(unionTrxn$merchantname, "旗舰店"))
    |!is.na(str_match(unionTrxn$merchantname, "专营店"))
