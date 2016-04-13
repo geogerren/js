@@ -15,6 +15,7 @@ on t.service_id = p.service_id
 
 ########################################################################################
 # Pull出现有的变量
+featureGen(features, 10014, '1000031.0', "modelScore")
 
 # featureGen(features, 10004, 1000005.1, "ecpNum")
 # features<-featureGen(features, 10004, 1000005.1, "mateNum", 2)

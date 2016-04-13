@@ -47,23 +47,28 @@ typeConverter(featuresWideU, c("tachEcp"), "integer")
 featuresWideU[juxinliSuccess=='None', juxinliSuccess:="0"]
 featuresWideU[FLAG_12_var1=='None', FLAG_12_var1:="0"]
 
+
 trainData <- featuresWideU[is.na(flgValidation),]
-validateData<- featuresWideU[flgValidation==1,]
+testData<- featuresWideU[flgValidation==1,]
 
 
-imputeResult<-ggImpute(trainData, fullImpute = F, removeMassiveMissing = F)
-testImpute<-ggImpute(validateData, fullImpute = F, removeMassiveMissing = F)
+trainImpute<-ggImpute(trainData, fullImpute = F, removeMassiveMissing = F)
+testImpute<-ggImpute(testData, fullImpute = F, removeMassiveMissing = F)
 
-# featuresWideU[, imputeResult$removeList:=NULL]
-
-
-# 
-# foreign::write.foreign(trainData, paste0(boxdata, "train.txt"),paste0(boxdata, "train.sas"),package = "SAS")
-# foreign::write.foreign(validateData, paste0(boxdata, "test.txt"),paste0(boxdata, "test.sas"),package = "SAS")
-# 
 # 
 # write.csv(trainData, paste0(boxdata, "train.csv"))
 # 
 # write.csv(validateData, paste0(boxdata, "test.csv"))
 # 
+
+
+trainData[, c("financingprojectid", "createtime"):=NULL]
+testData[, c("financingprojectid", "createtime"):=NULL]
+
+###############################################################################################
+# not run
+# endproduct:
+trainData
+testData
+
 

@@ -24,6 +24,7 @@ library(smbinning)
 
 # Model validation
 library(hmeasure)
+library(InformationValue)
 
 # connect with SAS
 # library(sas7bdat)

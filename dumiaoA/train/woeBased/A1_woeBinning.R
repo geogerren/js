@@ -5,7 +5,7 @@ train[, c("applicantContact", "addrUsedNum",           "browserUsedNum",        
       ]
 
 
-autoBin<-autoWoE(train, "flgDPD")
+autoBin<-woeAutoBin(train, "flgDPD")
 binningDF<-autoBin$woeTable
 write.csv(binningDF, paste0(boxdata, "autoBin.csv"))
 
@@ -92,7 +92,7 @@ assigningDF <- rbind(assigningDF, RFM_1_var4_list$woeVar)
 
 
 # 近6个月餐饮类交易笔数. 半年无餐饮消费的,无信用生活习惯,卡不活跃,生活轨迹可疑,可能为中介养卡,容易逾期.
-RFM_6_var12_list<-woeCalc(train, "RFM_6_var12","flgDPD", binning=c(-Inf, -999, 0, 2, Inf))
+RFM_6_var12_list<-woeCalc(train, "RFM_6_var12","flgDPD", binning=c(-Inf, -999, 0, Inf))
 train <- RFM_6_var12_list$resultDT
 assigningDF <- rbind(assigningDF, RFM_6_var12_list$woeVar)
 
@@ -104,7 +104,7 @@ assigningDF <- rbind(assigningDF, RFM_6_var2_list$woeVar)
 
 
 # 近6个月借贷交易笔数. 半年无借贷消费的,无信用生活习惯,生活轨迹可疑,可能为中介养卡,容易逾期.
-RFM_6_var20_list<-woeCalc(train, "RFM_6_var20","flgDPD", binning=c(-Inf, -999, 0, 2, Inf))
+RFM_6_var20_list<-woeCalc(train, "RFM_6_var20","flgDPD", binning=c(-Inf, -999, 0, Inf))
 train <- RFM_6_var20_list$resultDT
 assigningDF <- rbind(assigningDF, RFM_6_var20_list$woeVar)
 
@@ -201,12 +201,17 @@ localFriends_list<-woeCalc(train, "localFriends","flgDPD", binning=localFriends_
 train <- localFriends_list$resultDT
 assigningDF <- rbind(assigningDF, localFriends_list$woeVar)
 
+# 同盾多平台
+tongdunMultiLoanNum_list<-woeCalc(train, "tongdunMultiLoanNum","flgDPD")
+train <- tongdunMultiLoanNum_list$resultDT
+assigningDF <- rbind(assigningDF, tongdunMultiLoanNum_list$woeVar)
+
 
 write.csv(assigningDF, paste0(boxdata, "assigning.csv"))
 ###############################################################################################
 # not run
 # endproduct:
-assigningDF
+View(assigningDF)
 train
 
 
