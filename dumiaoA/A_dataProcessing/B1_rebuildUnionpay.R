@@ -157,9 +157,8 @@ unionPayRebuilt[, createtime:=NULL]
 # names(unionPayRebuilt)<-paste0(names(unionPayRebuilt), ".1")
 # 
 
-#######################################################################################################
-remove(card12mths)
-remove(card1mth)
-remove(card3mths)
-remove(card6mths)
-remove(unionTrxn)
+#####################################################
+# not run
+# endproduct:
+unionPayRebuilt
+

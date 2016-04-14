@@ -1,6 +1,4 @@
 
-
-
 featuresWideU[financingprojectid %in% c(113187,120779), card_tp:="platinum_card"]
 featuresWideU[card_tp=="golden_card", card_tp:="3"]
 featuresWideU[card_tp=="platinum_card", card_tp:="4"]
@@ -25,7 +23,7 @@ featuresResult <- featureAnalysis(featuresWideU, exclude=c("financingprojectid",
                                          "tachEcp", "trustAddr", "trustIP", "flgDPD", "LOC_6_var12","LOC_6_var13"
                                          ,"LOC_6_var14", "dc_flag", "flgTest", "flgTrainTest"))
 
-write.csv(featuresResult, paste0(boxdata, "featuresAnal.csv"))
+# write.csv(featuresResult, paste0(boxdata, "featuresAnal.csv"))
 
 
 
@@ -37,9 +35,6 @@ typeConverter(featuresWideU, c("callBlacklist", "callLaws", "callNetLoanBlank",
 
 
 typeConverter(featuresWideU, c("tachEcp"), "integer")
-
-
-
 
 
 
@@ -60,10 +55,10 @@ testImpute<-ggImpute(testData, fullImpute = F, removeMassiveMissing = F)
 # 
 # write.csv(validateData, paste0(boxdata, "test.csv"))
 # 
-
-
-trainData[, c("financingprojectid", "createtime"):=NULL]
-testData[, c("financingprojectid", "createtime"):=NULL]
+# 
+# 
+# trainData[, c("financingprojectid", "createtime"):=NULL]
+# testData[, c("financingprojectid", "createtime"):=NULL]
 
 ###############################################################################################
 # not run

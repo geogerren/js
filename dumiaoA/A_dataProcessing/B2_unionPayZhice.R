@@ -23,3 +23,9 @@ zhiceBack[, RFM_h_var2:=as.POSIXct(RFM_h_var2)]
 unionpayAgg<-rbind(unionPayRebuilt, zhiceBack)
 
 
+
+
+#####################################################
+# not run
+# endproduct:
+unionpayAgg

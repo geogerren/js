@@ -144,3 +144,16 @@ featuresWide<-merge(featuresWide, target[, c("project_id","Loan_Date","tenor","f
 # test<-featureAnalysis(featuresWideU, c("financingprojectid","NA","createtime","Loan_Date","flgDPD","flgTest"))
 featuresWide[, createtime:=as.POSIXct(createtime)]
 featuresWide[, "NA":=NULL]
+
+
+# 海哥要再造2个变量
+featuresWide[, applyHour:=hour(createtime)]
+featuresWide[, applyTimeSegment:=ifelse(applyHour>=1 & applyHour<=6, "3", ifelse(applyHour>=9 & applyHour<=20, "1", "2"))]
+
+
+#####################################################
+# not run
+# endproduct:
+featuresWide
+
+

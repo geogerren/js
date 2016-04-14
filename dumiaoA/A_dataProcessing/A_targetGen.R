@@ -158,3 +158,11 @@ set.seed(2016)
 target[project_id %in% sample(target$project_id, floor(nrow(target)*0.2)), flgValidation:=1]
 
 
+
+
+#####################################################
+# not run
+# endproduct:
+target
+
+
