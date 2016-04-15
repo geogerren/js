@@ -1,7 +1,3 @@
-# scoredTrain<-scoreAssignAuto(rawTrain, scoreCard, intercept = 512)
-# scoredTest <-scoreAssignAuto(rawTest, scoreCard, intercept = 512)
-
-# trainScoreBand <- banding(scoredTrain, "s_totalScore", "scoreBand")
 
 # Step A. 
 # A1. generate features
