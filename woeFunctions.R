@@ -1,7 +1,7 @@
 ########################################################################################################## WoE理论系列
 # categoricalDefault set to TRUE if want to automatically bin by the factor levels
 # Sample binning data table: data.table(1, c(1,2,3))
-woeCalc <- function(DT, X, Y, uniqueID="financingprojectid", binning=NULL, events=1, nonevents=0, printResult=T){
+woeCalc <- function(DT, X, Y, uniqueID="financingprojectid", binning=NULL, naZeroWoE=F, events=1, nonevents=0, printResult=T){
   isFactor <- FALSE
   isNumeric <- FALSE
   if(!(X %in% names(DT))){
@@ -17,7 +17,9 @@ woeCalc <- function(DT, X, Y, uniqueID="financingprojectid", binning=NULL, event
       resultCalc[, maxValue:=get(X)]
       resultCalc[, type:="categorical"]
     }else{
+      independent<-signif(independent, digits = 2)
       groupsDF <- grouping(independent, groups = 10)
+      resultCalc[, X:=signif(get(X),2), with=F]
       resultCalc <- merge(resultCalc, groupsDF, by.x=X, by.y="dataVector", all.x=T)
       
       setnames(resultCalc, "groupMax", "maxValue")
@@ -41,10 +43,14 @@ woeCalc <- function(DT, X, Y, uniqueID="financingprojectid", binning=NULL, event
   }else{
     # 用于numeric的断点自定义分组
     isNumeric <- TRUE
+    independent<-signif(independent, digits = 2)
+    
     binDF <- data.table(value=independent, range=cut(independent, binning))
     binDFMax <- binDF[, .("groupMax"=max(value)), by="range"]
     binDF <- merge(binDF, binDFMax, by="range")
     binDF <- binDF[!duplicated(value),]
+
+    resultCalc[, X:=signif(get(X),2), with=F]
     resultCalc <- merge(resultCalc, binDF[, c("value", "groupMax"), with=F], by.x=X, by.y="value")
     
     setnames(resultCalc, "groupMax", "maxValue")
@@ -60,10 +66,17 @@ woeCalc <- function(DT, X, Y, uniqueID="financingprojectid", binning=NULL, event
   result[, EventsPctg:=EventsCnt/sum(EventsCnt)]
   result[, NonEventsPctg:=NonEventsCnt/sum(NonEventsCnt)]
   result[, WoE:=log(EventsPctg/NonEventsPctg)]
+  
+  # 要是需要给missing的WoE全都assign成0, 就在这一步
+  if(naZeroWoE){
+    result[maxValue<MISSING_DEFAULT+1 | maxValue==MISSING_DEFAULT, WoE:=0]
+  }
+  
   result[, IV:=sum((EventsPctg-NonEventsPctg)*WoE)]
   result[, varName:=X]
   result<-result[order(as.numeric(maxValue))]
   
+
   # 把woe放进原data frame
   DT<-merge(DT, resultCalc[, c(uniqueID, "maxValue"), with=F], by=uniqueID, all.x=T)
   DT<-merge(DT, result[, c("maxValue", "WoE"), with=F], by.x="maxValue", by.y="maxValue")
@@ -86,17 +99,7 @@ woeCalc <- function(DT, X, Y, uniqueID="financingprojectid", binning=NULL, event
     result[, maxValue:=as.numeric(maxValue)]
     result[maxValue==max(maxValue), maxValue:='9999999999']
   }
-  ##############################################################  
-  # result[, plotWoE:=ifelse(WoE>0.9, "---------1", 
-  #                          ifelse(WoE>0.7, "--------1-", 
-  #                                 ifelse(WoE>0.5, "-------1--", 
-  #                                        ifelse(WoE>0.3, "------1---", 
-  #                                               ifelse(WoE>0.1, "-----1----", 
-  #                                                      ifelse(WoE>-0.1, "----1-----", 
-  #                                                             ifelse(WoE>-0.3, "---1------", 
-  #                                                                    ifelse(WoE>-0.5, "--1-------", 
-  #                                                                           ifelse(WoE>-0.7, "-1--------", "1---------")))))))))]
-  # 返回一个list，包括master DT和result
+
   return(list(resultDT=DT, woeVar=result))
 }
 
@@ -172,14 +175,14 @@ scoreCalc <- function(binningDF, lmModel, neutralForMissing=T, b=500, p=50, o=0.
   
   # 计算每个变量的评分, reverse the WoE part to make lower scores unfavorable
   if(neutralForMissing){
-    scoreDF[, varScore:= ifelse(maxValue==MISSING_DEFAULT, 0, 1)*coefficient*WoE*Factor]
+    scoreDF[, varScore:= ifelse(maxValue==MISSING_DEFAULT, 0, -1)*coefficient*WoE*Factor]
   }else{
-    scoreDF[, varScore:= coefficient*WoE*Factor]
+    scoreDF[, varScore:= -coefficient*WoE*Factor]
   }
   print(paste0("factor= ", Factor, "; 
                offset= ", Offset, ";
-               Intercept= ", Factor*Intercept+Offset))
-  return(list(scoreDF=scoreDF, Intercept=Factor*Intercept+Offset))
+               Intercept= ", -Factor*Intercept+Offset))
+  return(list(scoreDF=scoreDF, Intercept=-Factor*Intercept+Offset))
 }
 
 # scoringDF requires type, varName, varScore at least

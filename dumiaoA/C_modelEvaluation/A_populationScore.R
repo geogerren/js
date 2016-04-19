@@ -1,15 +1,32 @@
 
 # Step A. 
 # A1. generate features
-applicants<-ruleq("select 
+mval_applicants<-ruleq("select 
 t.mod_id,
 t.index_id,
 t.rule_id,
 t.input_val
 from t_mod_score t
-join project_detail p
-on t.service_id = p.service_id
 ")
+
+
+
+featureGen(features, 10016, 1000036.2, "longTimeShutdown")
+featureGen(features, 10008, 1000012, "zhimaScore")
+featureGen(features, 10016, 1000036.1, "localFriends")
+
+
+
+
+
+
+
+
+
+
+
+
+
 featuresWide<-dcast.data.table(features, financingprojectid + createtime ~ key, fun.agg=min, value.var = "value")
 
 # A2. merge unionpay and tongdun

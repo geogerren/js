@@ -1,18 +1,20 @@
 source("E:/Seafiles/Jimu/Code/js/sourceFile.R")
-ods<-read.csv("E:/Seafiles/Jimu/Data/ods_drawdown_loans.csv", stringsAsFactors = F)
+ods<-read.csv("E:/Seafiles/Jimu/Data/ods_drawdown_loans_413.csv", stringsAsFactors = F)
 ods<-data.table(ods)
 ods[, Loan_Date:=as.Date(Loan_Date)]
 ods[, statc_dt:=as.Date(statc_dt)]
 ods<-ods[!(Loan_Date>='2015-11-03'&Loan_Date<='2015-11-30'), ]
 ods<-ods[order(ods$Loan_Date)]
 
-
+length(unique(ods$project_id))
 # 15 days DQ in 90 days 
 # tenor>=3要求至少90天performance
 ods90DaysPerf<-ods[tenor>=3, ]
+length(unique(ods90DaysPerf$project_id))
+
 ods90DaysPerf[, daysFromDD:=statc_dt-Loan_Date]
 ods90DaysPerf[, DPD8:=ifelse(Cur_Overdue_Days==8, 1, 0)]
-ods90DaysPerf[, DPD15:=ifelse(Cur_Overdue_Days==15, 1, 0)]
+ods90DaysPerf[, DPD15in90:=ifelse(Cur_Overdue_Days==15 & daysFromDD<=90, 1, 0)]
 
 # ods90DaysPerf<-ods[statc_dt-Loan_Date<=90&tenor>=3, ]
 # ods90days_pivot<-ods90DaysPerf[, .("maxx"=max(statc_dt), "loanDate"=min(Loan_Date)), by="project_id"]
@@ -20,7 +22,7 @@ ods90DaysPerf[, DPD15:=ifelse(Cur_Overdue_Days==15, 1, 0)]
 # ods90days_pivot<-ods90days_pivot[maxDaysFromDD==90,]
 
 target3<-ods90DaysPerf[, .("DPD8"=sum(DPD8), 
-                           "DPD15in90"=sum(DPD15),
+                           "DPD15in90"=sum(DPD15in90),
                            "maxFromDD"=max(daysFromDD)), 
                        by=c("project_id","Loan_Date","tenor")]
 target3[, Good:=ifelse(DPD8==0 & maxFromDD>=90,1,0)]
@@ -49,6 +51,8 @@ target3Final<-target3[flgDPD!=-1,]
 
 # tenor=2要求至少60天performance
 ods60DaysPerf<-ods[tenor==2, ]
+length(unique(ods60DaysPerf$project_id))
+
 ods60DaysPerf[, daysFromDD:=statc_dt-Loan_Date]
 ods60DaysPerf[, DPD8:=ifelse(Cur_Overdue_Days==8, 1, 0)]
 ods60DaysPerf[, DPD15:=ifelse(Cur_Overdue_Days==15, 1, 0)]
@@ -88,6 +92,7 @@ target2Final<-target2[flgDPD!=-1,]
 
 # tenor=1要求至少30天performance
 ods30DaysPerf<-ods[tenor==1, ]
+length(unique(ods30DaysPerf$project_id))
 ods30DaysPerf[, daysFromDD:=statc_dt-Loan_Date]
 ods30DaysPerf[, DPD8:=ifelse(Cur_Overdue_Days==8, 1, 0)]
 ods30DaysPerf[, DPD15:=ifelse(Cur_Overdue_Days==15, 1, 0)]
@@ -122,19 +127,19 @@ target<-rbind(target1Final[, c("project_id", "Loan_Date", "tenor", "flgDPD"), wi
 # targetTotal<-rbind(target1, target2, target3)
 
 ################################################################################
-# 去除失联人员
-lostContact <- read.csv(paste0(boxdata, "lostContact0322.csv"))
-lostContact<-data.table(lostContact)
-mapping <- read.csv(paste0(boxdata, "financings.csv"),stringsAsFactors = F)
-mapping<-data.table(mapping)
-mapping[, borroweruserid:=as.integer(borroweruserid)]
-mapping[, financingprojectid:=as.integer(financingprojectid)]
-lostContact <- merge(lostContact, mapping, by.x="委案编号", by.y="borroweruserid", all.x=T)
-
-target<-target[!(project_id %in% lostContact$financingprojectid & flgDPD==0), ]
-
-# target[, flgDPD:=as.numeric(flgDPD)]
-
+# # 去除失联人员
+# lostContact <- read.csv(paste0(boxdata, "lostContact0322.csv"))
+# lostContact<-data.table(lostContact)
+# mapping <- read.csv(paste0(boxdata, "financings.csv"),stringsAsFactors = F)
+# mapping<-data.table(mapping)
+# mapping[, borroweruserid:=as.integer(borroweruserid)]
+# mapping[, financingprojectid:=as.integer(financingprojectid)]
+# lostContact <- merge(lostContact, mapping, by.x="委案编号", by.y="borroweruserid", all.x=T)
+# 
+# target<-target[!(project_id %in% lostContact$financingprojectid & flgDPD==0), ]
+# 
+# # target[, flgDPD:=as.numeric(flgDPD)]
+# 
 
 
 ################################################################################

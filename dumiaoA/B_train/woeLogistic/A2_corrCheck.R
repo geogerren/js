@@ -17,10 +17,21 @@ write.csv(corMatrix1, paste0(boxdata, "corMatrix1.csv"))
 # 与RFM_12_var2 (0.890433645)和RFM_1_var1 (0.665265872)均有相关
 
 
-corrRemoveList <- c("FLAG_6_var11","RFM_6_var2","RFM_1_var14")
+corrRemoveList <- c("RFM_12_var2","RFM_6_var15","useCardPM")
 
 # 仅保留不在remove里的且出现在assigningDF里的
-keepVarRaw <- unique(assigningDF$varName)
+keepVarRaw <- keepVarRaw[!(keepVarRaw %in% corrRemoveList)]
+corrCheck <- train[, keepVarRaw, with=F]
+corrCheck[, c("longTimeShutdown", "marry", "sex", "card_tp", "localFriends", "tongdunMultiLoanNum"):=NULL]
+corMatrix2 <- cor(corrCheck, method = "spearman")
+
+write.csv(corMatrix2, paste0(boxdata, "corMatrix2.csv"))
+
+
+corrRemoveList <- c("RFM_1_var14","consumeFreg","zhiceCar")
+
+
+# 仅保留不在remove里的且出现在assigningDF里的
 keepVarRaw <- keepVarRaw[!(keepVarRaw %in% corrRemoveList)]
 keepVar <- c(paste0("w_", keepVarRaw), "flgDPD")
 

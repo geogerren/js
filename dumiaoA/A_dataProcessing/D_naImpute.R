@@ -29,9 +29,9 @@ featuresResult <- featureAnalysis(featuresWideU, exclude=c("financingprojectid",
 
 typeConverter(featuresWideU, c("callBlacklist", "callLaws", "callNetLoanBlank",
                                 "card_tp", "ecpPhoneTag",  "hasShCISReport", 
-                                 "inJulixinBlanklist",  "juxinliSuccess",
+                                 "inJulixinBlanklist",  
                                "marry", "longTimeShutdown", "localFriends",  "sex", "normalContact", 
-                                 "flgDPD","FLAG_12_var1"), "factor")
+                                 "flgDPD"), "factor")
 
 
 typeConverter(featuresWideU, c("tachEcp"), "integer")
@@ -39,8 +39,6 @@ typeConverter(featuresWideU, c("tachEcp"), "integer")
 
 
 ###################################################################################
-featuresWideU[juxinliSuccess=='None', juxinliSuccess:="0"]
-featuresWideU[FLAG_12_var1=='None', FLAG_12_var1:="0"]
 
 
 trainData <- featuresWideU[is.na(flgValidation),]
@@ -50,8 +48,10 @@ testData<- featuresWideU[flgValidation==1,]
 trainImpute<-ggImpute(trainData, fullImpute = F, removeMassiveMissing = F)
 testImpute<-ggImpute(testData, fullImpute = F, removeMassiveMissing = F)
 
+# table(trainData$consumeFreg, useNA = "ifany")
+
 # 
-# write.csv(trainData, paste0(boxdata, "train.csv"))
+write.csv(trainData, paste0(boxdata, "train.csv"))
 # 
 # write.csv(validateData, paste0(boxdata, "test.csv"))
 # 
