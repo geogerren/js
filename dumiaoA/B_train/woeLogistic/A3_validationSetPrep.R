@@ -4,6 +4,9 @@ test[, c("applicantContact", "addrUsedNum",           "browserUsedNum",        "
           "mateNum",               "noNeedMobileAuthCheck",  "trustAddr",             "trustIP",               "unexpectedApplyTime" ):=NULL
       ]
 
+naBlankInfer(test, "goOut120", -1, -99999)
+naBlankInfer(test, "localFriends", -1, -99999)
+
 test2 <- woeAssignAuto(test, assigningDF)
 
 rawTest<-test2[, c(keepVarRaw,"flgDPD"), with=F]
