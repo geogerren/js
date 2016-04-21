@@ -58,6 +58,4 @@ tdMultiWide <- tdMulti[, .("PhonePlatNum"=sum(PhonePlatNum, na.rm = T),
 featuresWideU<-merge(featuresWideU, tdMultiWide, by="financingprojectid", all.x = T)
 
 
-# 智策回传的CSV有duplicate(3个)
-featuresWideU<-featuresWideU[!duplicated(financingprojectid),]
 

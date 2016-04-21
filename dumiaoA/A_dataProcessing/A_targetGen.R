@@ -158,10 +158,10 @@ target<-rbind(target1Final[, c("project_id", "Loan_Date", "tenor", "flgDPD"), wi
 # remove(k1)
 # remove(k2)
 # remove(k3)
-
-set.seed(2016)
-target[project_id %in% sample(target$project_id, floor(nrow(target)*0.2)), flgValidation:=1]
-
+# 
+# set.seed(2016)
+# target[project_id %in% sample(target$project_id, floor(nrow(target)*0.2)), flgValidation:=1]
+# 
 
 
 

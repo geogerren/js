@@ -80,7 +80,7 @@ featuresWideU[, hightRiskTransAvg6:=ifelse(!is.na(hightRiskTransAvg6), hightRisk
 featuresWideU[, unionpayPosConsumeCityRank:=ifelse(city==LOC_6_var12, 1, ifelse(city==LOC_6_var13, 2, ifelse(city==LOC_6_var14, 3, 0)))]
 
 
-
+featuresWideU[, card_tp:=NULL]
 featuresWideU[, MON_6_var1:=NULL]
 featuresWideU[, RFM_h_var2:=NULL]
 featuresWideU[, RFM_6_var2:=NULL]
@@ -96,7 +96,6 @@ featuresWideU[, flag_h_var1:=NULL]
 featuresWideU[, declareCar:=NULL]
 featuresWideU[, FLAG_12_var1:=NULL]
 featuresWideU[, RFM_1_var1:=NULL]
-featuresWideU[, card_tp:=NULL]
 featuresWideU[, RFM_12_var58:=NULL]
 featuresWideU[, RFM_12_var59:=NULL]
 featuresWideU[, RFM_6_var21:=NULL]
@@ -109,10 +108,12 @@ featuresWideU[, LOC_6_var13:=NULL]
 featuresWideU[, LOC_6_var14:=NULL]
 
 
+featuresWideU[, c("cnp_score","cot_cluster","cot_score","rsk_cluster","rsk_score","wlp_score"):=NULL]
 
 
 
-
+# 智策回传的CSV有duplicate(3个)
+featuresWideU<-featuresWideU[!duplicated(financingprojectid),]
 
 #####################################################
 # not run

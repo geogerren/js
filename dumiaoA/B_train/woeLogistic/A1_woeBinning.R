@@ -1,11 +1,11 @@
-train <- copy(trainData)
+train <- copy(featuresWideU)
 # train[, c("applicantContact", "addrUsedNum",           "browserUsedNum",        "called5",               "cellphoneAuth",         "ecpNum",
 #           "ecp_eachother",         "highZhimaScore",        "inBlanklist",           "inZhimaBlank",          "ipUsedNum",
 #           "mateNum",               "noNeedMobileAuthCheck",  "trustAddr",             "trustIP",               "unexpectedApplyTime" ):=NULL
 #       ]
 
 
-autoBin<-woeAutoBin(train, "flgDPD", exclude = c("financingprojectid", "createtime"))
+autoBin<-woeAutoBin(train, "flgDPD", exclude = c("financingprojectid", "createtime","dc_flag"))
 binningDF<-autoBin$woeTable
 write.csv(binningDF, paste0(boxdata, "autoBin.csv"))
 

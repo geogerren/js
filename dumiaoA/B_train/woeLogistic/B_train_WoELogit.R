@@ -81,9 +81,9 @@ summary(m1validate)
 
 
 #####################################################
-# remove localFriends, w_age, w_zhiceHouse      (not explainable)
+# remove localFriends, w_age, w_zhiceHouse, RFM_6_var12      (not explainable)
 # 
-m2 <- glm(flgDPD ~ w_RFM_6_var12 + w_applyTimeSegment + 
+m2 <- glm(flgDPD ~ w_applyTimeSegment + 
             w_avgMonthCall + w_consumeLineRate + w_lastMonthOverdrawNum + 
             w_loansCalls3 + w_longTimeShutdown + w_multiBorrowNumP6 + w_postMonthConsumeFreg +
             w_useCardAmountAvg + w_useCardLastTime + 
@@ -103,7 +103,7 @@ auc(as.numeric(as.character(binTest$flgDPD)), binTest$score)
 
 
 
-mBinFinal<-m1
+mBinFinal<-m21
 # not run
 # endproduct:
 mBinFinal
