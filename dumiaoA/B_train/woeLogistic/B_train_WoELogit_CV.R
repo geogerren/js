@@ -366,7 +366,7 @@ summary(M2)
 
 
 ########################################################
-mBinFinal<-M2
+mBinFinal<-M1
 # not run
 # endproduct:
 mBinFinal
