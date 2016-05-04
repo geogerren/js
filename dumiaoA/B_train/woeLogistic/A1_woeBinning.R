@@ -5,11 +5,11 @@ train <- copy(featuresWideU)
 #       ]
 
 
-autoBin<-woeAutoBin(train, "flgDPD", exclude = c("financingprojectid", "createtime","dc_flag"))
-binningDF<-autoBin$woeTable
-write.csv(binningDF, paste0(boxdata, "autoBin.csv"))
+# autoBin<-woeAutoBin(train, "flgDPD", exclude = c("financingprojectid", "createtime","dc_flag"))
+# binningDF<-autoBin$woeTable
+# write.csv(binningDF, paste0(boxdata, "autoBin.csv"))
 
-
+options(warn = -1)
 #####################################################################################################################
 assigningDF <- data.frame()
 
@@ -34,7 +34,6 @@ assigningDF <- rbind(assigningDF, RFM_6_var12_list$woeVar)
 RFM_6_var15_list<-woeCalc(train, "RFM_6_var15","flgDPD", binning=c(-Inf, -999, 1, Inf), naZeroWoE=T)
 train <- RFM_6_var15_list$resultDT
 assigningDF <- rbind(assigningDF, RFM_6_var15_list$woeVar)
-
 
 age_Derived_list<-woeCalc(train, "age","flgDPD", binning=c(-Inf, 24, 29, Inf))
 train <- age_Derived_list$resultDT
@@ -152,7 +151,7 @@ assigningDF <- rbind(assigningDF, zhimaScore_list$woeVar)
 
 
 
-write.csv(assigningDF, paste0(boxdata, "assigning.csv"))
+# write.csv(assigningDF, paste0(boxdata, "assigning.csv"))
 ###############################################################################################
 # not run
 # endproduct:

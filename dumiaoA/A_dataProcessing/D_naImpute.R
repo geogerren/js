@@ -12,7 +12,7 @@ featuresWideU[, sex:=ifelse(sex=='M', 1, 0)]
 featuresResult <- featureAnalysis(featuresWideU, exclude=c("financingprojectid", "createtime"))
 
 
-write.csv(featuresResult, paste0(boxdata, "featuresAnal.csv"))
+# write.csv(featuresResult, paste0(boxdata, "featuresAnal.csv"))
 
 
 

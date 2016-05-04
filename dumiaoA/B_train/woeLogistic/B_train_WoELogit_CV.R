@@ -7,6 +7,10 @@ for(i in 1:nrow(allDataBin)){
   allDataBin[i, bucket:=ceiling(runif(1, 0, 5))]
 }
 
+# without银联数据
+allDataBin[, c("w_RFM_12_var55","w_RFM_6_var12","w_amuseConsumeFreq","w_cardType","w_consumeLineRate",
+               "w_creditCashFreq","w_creditWD3Months","w_goOut120","w_lastMonthOverdrawNum","w_multiBorrowNumP6",
+               "w_postMonthConsumeFreg","w_useCardLastTime","w_useCardNumPost6","w_zhiceHouse"):=NULL]
 ###############################################################################
 #  binned full model 1
 train1 <- allDataBin[bucket %in% c(1,2,3,4),]
@@ -34,6 +38,10 @@ summary(m1)
 m1validate <- glm(formula = flgDPD ~ w_RFM_6_var12 + w_age + w_applyTimeSegment + 
                     w_avgMonthCall + w_creditCashFreq + w_localFriends + w_longTimeShutdown + 
                     w_multiBorrowNumP6 + w_zhiceHouse + w_zhimaScore, data=test1, family=binomial())
+
+# m1validate <- glm(formula = flgDPD ~ w_age + w_applyTimeSegment + w_childrenNum + 
+#                     w_localFriends + w_longTimeShutdown + w_zhimaScore, family = binomial(), 
+#                   data = train1)
 
 
 summary(m1validate)
@@ -88,6 +96,9 @@ m2validate <- glm(formula = flgDPD ~ w_RFM_6_var12 + w_age + w_applyTimeSegment 
                     w_localFriends + w_longTimeShutdown + w_multiBorrowNumP6 + 
                     w_zhiceHouse + w_zhimaScore, data=test2, family=binomial())
 
+m2validate <- glm(formula = flgDPD ~ w_age + w_applyTimeSegment + w_avgMonthCall + 
+                    w_localFriends + w_longTimeShutdown + w_zhimaScore + bucket, 
+                  family = binomial(), data = train2)
 
 summary(m2validate)
 # Coefficients:
@@ -116,6 +127,7 @@ ks_stat(test2$flgDPD, test2$score)
 #  binned full model 3
 train3 <- allDataBin[bucket %in% c(1,2,4,5),]
 test3 <- allDataBin[bucket == 3,]
+train3[, bucket:=NULL]
 
 m3full<-glm(flgDPD~., data=train3, family=binomial())
 m3 <- step(m3full, direction = "both", trace=10)
@@ -140,7 +152,9 @@ m3validate <- glm(formula = flgDPD ~ w_RFM_12_var55 + w_RFM_6_var12 + w_age +
                     w_applyTimeSegment + w_avgMonthCall + w_localFriends + w_longTimeShutdown + 
                     w_multiBorrowNumP6 + w_useCardLastTime + w_zhiceHouse + w_zhimaScore, data=test3, family=binomial())
 
-
+m3validate <- glm(formula = flgDPD ~ w_age + w_applyTimeSegment + w_loansCalls3 + 
+                    w_localFriends + w_longTimeShutdown + w_zhimaScore + bucket, 
+                  family = binomial(), data = train3)
 summary(m3validate)
 # Coefficients:
 #   Estimate Std. Error z value Pr(>|z|)    
@@ -170,6 +184,7 @@ ks_stat(test3$flgDPD, test3$score)
 train4 <- allDataBin[bucket %in% c(1,3,4,5),]
 test4 <- allDataBin[bucket == 2,]
 
+train4[, bucket:=NULL]
 m4full<-glm(flgDPD~., data=train4, family=binomial())
 m4 <- step(m4full, direction = "both", trace=0)
 
@@ -195,7 +210,9 @@ m4validate <- glm(formula = flgDPD ~ w_RFM_6_var12 + w_age + w_applyTimeSegment 
                     w_localFriends + w_longTimeShutdown + w_multiBorrowNumP6 + 
                     w_useCardNumPost6 + w_zhiceHouse + w_zhimaScore, data=test4, family=binomial())
 
-
+m4validate <- glm(formula = flgDPD ~ w_age + w_applyTimeSegment + w_avgMonthCall + 
+                    w_localFriends + w_longTimeShutdown + w_zhimaScore, family = binomial(), 
+                  data = train4)
 summary(m4validate)
 # Coefficients:
 #   Estimate Std. Error z value Pr(>|z|)    
@@ -227,6 +244,7 @@ ks_stat(test4$flgDPD, test4$score)
 train5 <- allDataBin[bucket %in% c(5,2,3,4),]
 test5 <- allDataBin[bucket == 1,]
 
+train5[, bucket:=NULL]
 m5full<-glm(flgDPD~., data=train5, family=binomial())
 m5 <- step(m5full, direction = "both", trace=10)
 
@@ -254,7 +272,9 @@ m5validate <- glm(formula = flgDPD ~ w_RFM_12_var55 + w_RFM_6_var12 + w_applyTim
                     w_localFriends + w_longTimeShutdown + w_multiBorrowNumP6 + 
                     w_useCardNumPost6 + w_zhiceHouse + w_zhimaScore, data=test5, family=binomial())
 
-
+m5validate <- glm(formula = flgDPD ~ w_age + w_applyTimeSegment + w_avgMonthCall + 
+                    w_localFriends + w_longTimeShutdown + w_zhimaScore, family = binomial(), 
+                  data = train5)
 summary(m5validate)
 # Coefficients:
 #   Estimate Std. Error z value Pr(>|z|)    
@@ -306,6 +326,10 @@ ks_stat(test5$flgDPD, test5$score)
 M1 <- glm(formula = flgDPD ~ w_RFM_6_var12 + w_age + w_applyTimeSegment + 
                 w_avgMonthCall + w_localFriends + w_longTimeShutdown + 
                 w_multiBorrowNumP6 + w_zhiceHouse + w_zhimaScore, data=allDataBin, family=binomial())
+
+M1 <- glm(formula = flgDPD ~ w_age + w_applyTimeSegment + w_avgMonthCall + 
+      w_localFriends + w_longTimeShutdown + w_zhimaScore, family = binomial(), 
+    data = allDataBin)
 
 allDataBin$score <- predict(M1, type='response', allDataBin)
 
