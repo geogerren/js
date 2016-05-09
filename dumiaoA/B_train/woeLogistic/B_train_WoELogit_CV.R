@@ -8,9 +8,9 @@ for(i in 1:nrow(allDataBin)){
 }
 
 # without银联数据
-allDataBin[, c("w_RFM_12_var55","w_RFM_6_var12","w_amuseConsumeFreq","w_cardType","w_consumeLineRate",
-               "w_creditCashFreq","w_creditWD3Months","w_goOut120","w_lastMonthOverdrawNum","w_multiBorrowNumP6",
-               "w_postMonthConsumeFreg","w_useCardLastTime","w_useCardNumPost6","w_zhiceHouse"):=NULL]
+# allDataBin[, c("w_RFM_12_var55","w_RFM_6_var12","w_amuseConsumeFreq","w_cardType","w_consumeLineRate",
+#                "w_creditCashFreq","w_creditWD3Months","w_goOut120","w_lastMonthOverdrawNum","w_multiBorrowNumP6",
+#                "w_postMonthConsumeFreg","w_useCardLastTime","w_useCardNumPost6","w_zhiceHouse"):=NULL]
 ###############################################################################
 #  binned full model 1
 train1 <- allDataBin[bucket %in% c(1,2,3,4),]
@@ -327,9 +327,9 @@ M1 <- glm(formula = flgDPD ~ w_RFM_6_var12 + w_age + w_applyTimeSegment +
                 w_avgMonthCall + w_localFriends + w_longTimeShutdown + 
                 w_multiBorrowNumP6 + w_zhiceHouse + w_zhimaScore, data=allDataBin, family=binomial())
 
-M1 <- glm(formula = flgDPD ~ w_age + w_applyTimeSegment + w_avgMonthCall + 
-      w_localFriends + w_longTimeShutdown + w_zhimaScore, family = binomial(), 
-    data = allDataBin)
+# M1 <- glm(formula = flgDPD ~ w_age + w_applyTimeSegment + w_avgMonthCall + 
+#       w_localFriends + w_longTimeShutdown + w_zhimaScore, family = binomial(), 
+#     data = allDataBin)
 
 allDataBin$score <- predict(M1, type='response', allDataBin)
 
