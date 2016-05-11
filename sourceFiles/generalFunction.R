@@ -1,5 +1,5 @@
 
-source("./woeFunctions.R")
+source("./sourceFiles/woeFunctions.R")
 
 
 monthDiff <- Vectorize(function(startMth, endMth){

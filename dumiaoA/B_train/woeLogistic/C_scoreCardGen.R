@@ -3,7 +3,7 @@ scoreCard <- scoreCalc(assigningDF, mBinFinal, neutralForMissing = T, p=100, o=0
 
 write.csv(scoreCard, paste0(boxdata, "scoreCard.csv"))
 
-scoredTrain<-scoreAssignAuto(rawTrain, scoreCard, intercept = 507)
+scoredTrain<-scoreAssignAuto(rawTrain, scoreCard, intercept = 518)
 scoredTest <-scoreAssignAuto(rawTest, scoreCard, intercept = 507)
 
 trainScoreBand <- banding(scoredTrain, "s_totalScore", "scoreBand")
