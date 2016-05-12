@@ -102,7 +102,7 @@ date(a.CreateTime) as applyDate,
               from loan_apply a
               join dumiao_tracking b
               where a.applyid=b.applyid
-and a.createtime > date_add(date(NOW()), interval -30 day)
+and a.createtime > date_add(date(NOW()), interval -70 day)
               group by 1,2")
 
 channels[, channel_2:=ifelse(channel_1 %in% c("58Tongcheng1","58Tongcheng2","58Tongcheng3","chanrong","Fenqiguanjia","HaodaiWang","Jiedianqian",

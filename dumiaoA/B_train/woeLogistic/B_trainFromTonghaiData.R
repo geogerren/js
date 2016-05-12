@@ -20,17 +20,17 @@ dataTrainTH <- dataTrain[, c("RFM_6_var19","RFM_6_var12","applyTimeSegment","con
 ), with=F]
 
 
-dataTrain$RFM_6_var19
-dataTrain$RFM_6_var12
-dataTrain$applyTimeSegment
-dataTrain$consumeFreg
-dataTrain$longTimeShutdown
-dataTrain$unionpayPosConsumeCityRank
-dataTrain$zhimaScore
-dataTrain$avgMonthCall
-dataTrain$localFriendsTransformed
-dataTrain$provinceTransformed
-dataTrain$flgDPD
+# dataTrain$RFM_6_var19
+# dataTrain$RFM_6_var12
+# dataTrain$applyTimeSegment
+# dataTrain$consumeFreg
+# dataTrain$longTimeShutdown
+# dataTrain$unionpayPosConsumeCityRank
+# dataTrain$zhimaScore
+# dataTrain$avgMonthCall
+# dataTrain$localFriendsTransformed
+# dataTrain$provinceTransformed
+# dataTrain$flgDPD
 
 dataTrainTHImpute<-ggImpute(dataTrainTH, fullImpute = F, removeMassiveMissing = F)
 
@@ -62,7 +62,7 @@ dataTrainTH <- longTimeShutdown_list$resultDT
 assigningDF <- rbind(assigningDF, longTimeShutdown_list$woeVar)
 
 
-unionpayPosConsumeCityRank_list<-woeCalc(dataTrainTH, "unionpayPosConsumeCityRank","flgDPD", binning=c(-Inf, -999, 1, Inf))
+unionpayPosConsumeCityRank_list<-woeCalc(dataTrainTH, "unionpayPosConsumeCityRank","flgDPD", binning=c(-Inf, -999, 0, 1, Inf))
 dataTrainTH <- unionpayPosConsumeCityRank_list$resultDT
 assigningDF <- rbind(assigningDF, unionpayPosConsumeCityRank_list$woeVar)
 
@@ -77,7 +77,6 @@ dataTrainTH <- avgMonthCall_list$resultDT
 assigningDF <- rbind(assigningDF, avgMonthCall_list$woeVar)
 
 
-dataTrainTH[, localFriendsTransformed:=as.factor(localFriendsTransformed)]
 localFriendsTransformed_list<-woeCalc(dataTrainTH, "localFriendsTransformed","flgDPD")
 dataTrainTH <- localFriendsTransformed_list$resultDT
 assigningDF <- rbind(assigningDF, localFriendsTransformed_list$woeVar)
@@ -150,22 +149,23 @@ assigningDF <- rbind(assigningDF, provinceTransformed_list$woeVar)
 
 ##########################################################################################
 binTrain<-dataTrainTH[, c("w_RFM_6_var12","w_RFM_6_var19","w_applyTimeSegment","w_consumeFreg",
-                "w_longTimeShutdown","w_unionpayPosConsumeCityRank","w_zhimaScore",
+                "w_longTimeShutdown","w_zhimaScore",
                 "w_avgMonthCall",
                 "w_provinceTransformedBin","flgDPD"), with=F]
 rawTrain<-dataTrainTH[, c("RFM_6_var19","RFM_6_var12","applyTimeSegment","consumeFreg","longTimeShutdown","unionpayPosConsumeCityRank", "zhimaScore",
           "avgMonthCall","flgDPD","provinceTransformedBin"), with=F]
 
 
-
 allDataBin <- copy(binTrain)
 allDataRaw <- copy(rawTrain)
+set.seed(2016)
 for(i in 1:nrow(allDataBin)){
   allDataBin[i, bucket:=ceiling(runif(1, 0, 5))]
 }
 
 train <- allDataBin[bucket %in% c(1,2,3,4),]
 test <- allDataBin[bucket == 5,]
+
 
 train[, bucket:=NULL]
 mfull<-glm(flgDPD~., data=train, family=binomial())
