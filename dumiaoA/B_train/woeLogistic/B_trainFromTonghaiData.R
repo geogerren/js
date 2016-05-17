@@ -14,7 +14,7 @@ dataTrain[city %in% c("广州市","深圳市"), provinceTransformed:=city]
 
 dataTrain[, financingprojectid:=fi_9999999cingprojectid]
 
-dataTrainTH <- dataTrain[, c("RFM_6_var19","RFM_6_var12","applyTimeSegment","consumeFreg",
+dataTrainTH <- dataTrain[, c("RFM_6_var19","RFM_6_var12","applyTimeSegment","consumeFreg","modelScore",
                              "longTimeShutdown","unionpayPosConsumeCityRank","zhimaScore","avgMonthCall",
                              "localFriendsTransformed","provinceTransformed","flgDPD","financingprojectid"
 ), with=F]
@@ -62,9 +62,9 @@ dataTrainTH <- longTimeShutdown_list$resultDT
 assigningDF <- rbind(assigningDF, longTimeShutdown_list$woeVar)
 
 
-unionpayPosConsumeCityRank_list<-woeCalc(dataTrainTH, "unionpayPosConsumeCityRank","flgDPD", binning=c(-Inf, -999, 0, 1, Inf))
-dataTrainTH <- unionpayPosConsumeCityRank_list$resultDT
-assigningDF <- rbind(assigningDF, unionpayPosConsumeCityRank_list$woeVar)
+# unionpayPosConsumeCityRank_list<-woeCalc(dataTrainTH, "unionpayPosConsumeCityRank","flgDPD", binning=c(-Inf, -999, 0, 1, Inf))
+# dataTrainTH <- unionpayPosConsumeCityRank_list$resultDT
+# assigningDF <- rbind(assigningDF, unionpayPosConsumeCityRank_list$woeVar)
 
 
 zhimaScore_list<-woeCalc(dataTrainTH, "zhimaScore","flgDPD", binning = c(-Inf, 660, 700, Inf), naZeroWoE=T)
@@ -77,9 +77,9 @@ dataTrainTH <- avgMonthCall_list$resultDT
 assigningDF <- rbind(assigningDF, avgMonthCall_list$woeVar)
 
 
-localFriendsTransformed_list<-woeCalc(dataTrainTH, "localFriendsTransformed","flgDPD")
-dataTrainTH <- localFriendsTransformed_list$resultDT
-assigningDF <- rbind(assigningDF, localFriendsTransformed_list$woeVar)
+# localFriendsTransformed_list<-woeCalc(dataTrainTH, "localFriendsTransformed","flgDPD")
+# dataTrainTH <- localFriendsTransformed_list$resultDT
+# assigningDF <- rbind(assigningDF, localFriendsTransformed_list$woeVar)
 
 
 
@@ -148,12 +148,13 @@ dataTrainTH <- provinceTransformed_list$resultDT
 assigningDF <- rbind(assigningDF, provinceTransformed_list$woeVar)
 
 ##########################################################################################
-binTrain<-dataTrainTH[, c("w_RFM_6_var12","w_RFM_6_var19","w_applyTimeSegment","w_consumeFreg",
+dataTrainTH$rowID <- 1:nrow(dataTrainTH)
+binTrain<-dataTrainTH[, c("rowID","w_RFM_6_var12","w_RFM_6_var19","w_applyTimeSegment","w_consumeFreg",
                 "w_longTimeShutdown","w_zhimaScore",
                 "w_avgMonthCall",
                 "w_provinceTransformedBin","flgDPD"), with=F]
-rawTrain<-dataTrainTH[, c("RFM_6_var19","RFM_6_var12","applyTimeSegment","consumeFreg","longTimeShutdown","unionpayPosConsumeCityRank", "zhimaScore",
-          "avgMonthCall","flgDPD","provinceTransformedBin"), with=F]
+rawTrain<-dataTrainTH[, c("rowID","RFM_6_var19","RFM_6_var12","applyTimeSegment","consumeFreg","longTimeShutdown","unionpayPosConsumeCityRank", "zhimaScore",
+          "avgMonthCall","flgDPD","provinceTransformedBin","modelScore"), with=F]
 
 
 allDataBin <- copy(binTrain)
@@ -181,5 +182,18 @@ ks_stat(train$flgDPD, train$score)
 ks_stat(test$flgDPD, test$score)
 
 
+test[, c("bucket","score"):=NULL]
+mfulltest<-glm(flgDPD~., data=test, family=binomial())
+
+summary(mfulltest)
+
 
 mBinFinal<-mfull
+
+
+
+
+test
+train
+rawTrain
+
