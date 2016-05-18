@@ -28,6 +28,7 @@ cities[, applyid:=as.character(applyid)]
 applyidMapping <- ruleq("select id as service_id, ser_rec_id as applyid
                         from t_cust_ser")
 
+
 tvardict<-ruleq("select 
       td.applyid
                 ,td.var_code
@@ -79,8 +80,37 @@ featuresWide[, applyTimeSegment:=ifelse(applyHour>=1 & applyHour<=6, "3", ifelse
 
 featuresWideTotalPopulation<-copy(featuresWide)
 #####################################################
-# not run
-# endproduct:
-featuresWide
+
+library(jsonlite)
+
+basePath<-paste0(boxdata, "json/")
+fileNames<-list.files(basePath)
+
+unpJson<-data.frame()
+i<-1
+
+
+ok<-fromJSON(paste0(basePath, fileNames[2]))$data$data[, c("RFM_6_var12","RFM_6_var19")]
+ok$applyid<-268136
+unpJson<-ok
+
+
+
+for(file in fileNames){
+  print(i)
+  newRecord<-fromJSON(paste0(basePath, file))$data$data[, c("RFM_6_var12","RFM_6_var19")]
+  if(is.null(newRecord))
+    next
+  newRecord$applyid <- substr(file, 1,6)
+  unpJson<-rbind(unpJson, newRecord)
+  i<-i+1
+}
+
+##################################################################
+featuresWideTotalPopulation<-merge(featuresWideTotalPopulation, unpJson, by="applyid", all.x=T)
+
+
+oos<-copy(featuresWideTotalPopulation)
+
 
 
