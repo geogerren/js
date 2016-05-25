@@ -6,9 +6,7 @@ upfront<-dmq("select
              date(a.CreateTime) as applyDate,
              case 
              when b.channel='dumiaowechat' then 'WechatDumiaoPublic'              
-             when b.channel='58' and creditBalance <=5000 then '58Tongcheng1'
-             when b.channel='58' and creditBalance <=10000 and creditBalance >5000 then '58Tongcheng2'
-             when b.channel='58' and creditBalance >10000 then '58Tongcheng3'
+             when b.channel='58' then '58Tongcheng'
              when b.channel in ('groupmessage','singlemessage','timeline','wechatshare') then 'Wechat'
              when b.channel in ('baidu','jmhz01','jmhz10','jmhz15','jmhz16') then 'Baidu'
              when b.channel in ('jmhz3','jmhz17') then '360SEM'
@@ -45,21 +43,22 @@ upfront<-dmq("select
              from loan_apply a
              join dumiao_tracking b
              where a.applyid=b.applyid
+and a.createtime > date_add(date(NOW()), interval -90 day)
+and a.createtime < date(NOW())
              group by 1,2,3
              ")
 
+upfront_pivot1<-dcast.data.table(upfront, channel_1 + applyDate ~ status, fun.agg=sum, value.var = "cnt")
+upfront_pivot2<-upfront[, .("total"=sum(cnt)), by=c("channel_1","applyDate")]
 
-upfront[, channel_2:=ifelse(channel_1 %in% c("58Tongcheng1","58Tongcheng2","58Tongcheng3","chanrong","FenqiGuanjia","HaodaiWang","Jiedianqian",
+upfront_pivot<-merge(upfront_pivot1, upfront_pivot2, by=c("channel_1","applyDate"))
+upfront_pivot[, channel_2:=ifelse(channel_1 %in% c("58Tongcheng","chanrong","FenqiGuanjia","HaodaiWang","Jiedianqian",
                                              "Jielema","JunheWenhua","Qunar","SudaiZhijia","Woaika","Xinhe"), '渠道', 
                             ifelse(channel_1 %in% c("Baidu","360SEM","JinriToutiao"), '品专', '自有'))]
 
-write.csv(upfront, paste0(boxdata, "upfront.csv"))
+upfront_pivot[, throughRate:=`9_PROCESSFINISHED`/total]
 
-
-
-
-
-
+write.csv(upfront_pivot, paste0(boxdata, "kupfront.csv"), row.names = F)
 
 #########################################################################################################
 # 所有渠道的申请到放款数据
@@ -68,9 +67,7 @@ channels<-dmq("select
 date(a.CreateTime) as applyDate,
               case 
               when b.channel='dumiaowechat' then 'WechatDumiaoPublic'              
-              when b.channel='58' and creditBalance <=5000 then '58Tongcheng1'
-              when b.channel='58' and creditBalance <=10000 and creditBalance >5000 then '58Tongcheng2'
-              when b.channel='58' and creditBalance >10000 then '58Tongcheng3'
+              when b.channel='58' then '58Tongcheng'
               when b.channel in ('groupmessage','singlemessage','timeline','wechatshare') then 'Wechat'
               when b.channel in ('baidu','jmhz01','jmhz10','jmhz15','jmhz16') then 'Baidu'
               when b.channel in ('jmhz3','jmhz17') then '360SEM'
@@ -102,14 +99,16 @@ date(a.CreateTime) as applyDate,
               from loan_apply a
               join dumiao_tracking b
               where a.applyid=b.applyid
-and a.createtime > date_add(date(NOW()), interval -70 day)
+and a.createtime > date_add(date(NOW()), interval -90 day)
+and a.createtime < date(NOW())
               group by 1,2")
 
-channels[, channel_2:=ifelse(channel_1 %in% c("58Tongcheng1","58Tongcheng2","58Tongcheng3","chanrong","Fenqiguanjia","HaodaiWang","Jiedianqian",
+channels[, channel_2:=ifelse(channel_1 %in% c("58Tongcheng","chanrong","Fenqiguanjia","HaodaiWang","Jiedianqian",
                                               "Jielema","JunheWenhua","Qunar","SudaiZhijia","Woaika","Xinhe"), '渠道', 
                              ifelse(channel_1 %in% c("Baidu","360SEM","JinriToutiao"), '品专', '自有'))]
 
-
+channels[, approvalRate:=passed/processFinished]
+channels[, takeupRate:=disbursement/passed]
 write.csv(channels, paste0(boxdata, "channelsRaw.csv"))
 
 
