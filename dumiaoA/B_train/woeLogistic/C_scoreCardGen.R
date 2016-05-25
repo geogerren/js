@@ -5,10 +5,17 @@ write.csv(scoreCard, paste0(boxdata, "scoreCard.csv"))
 
 rawTrain<-cbind(rawTrain, allDataBin$bucket)
 is.data.table(rawTrain)
+
+
 scoredTrain<-scoreAssignAuto(rawTrain[V2 %in% c(1,2,3,4),], scoreCard, intercept = 508)
 scoredTest <-scoreAssignAuto(rawTrain[V2 == 5,], scoreCard, intercept = 508)
+trainScoreBand <- banding(scoredRawTrain, "s_totalScore", "scoreBand", bands = seq(0,1,0.2))
 
-trainScoreBand <- banding(scoredTrain, "s_totalScore", "scoreBand", bands = seq(0,1,0.2))
+
+
+# scoredRawTrain<-scoreAssignAuto(rawTrain, scoreCard, intercept = 488)
+# populationScoreBand <- banding(rawTrain, "s_totalScore", "scoreBand", bands = seq(0,1,0.2))
+
 
 scoredTest[, scoreBand:=ifelse(s_totalScore<466, 1, 
                                ifelse(s_totalScore<523, 2, 

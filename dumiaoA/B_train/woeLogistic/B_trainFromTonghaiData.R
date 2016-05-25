@@ -1,5 +1,6 @@
 dataTrain <- read.csv(paste0(boxdata, "dumiao_data_set_new.csv"))
 dataTrain <- data.table(dataTrain)
+# dataTrain <- dataTrain[AppAmount<=5000,]
 
 # local & tier1 = 1, non-local & tier1 = 2, local & non-tier1 = 3, non-local & non-tier1 = 4
 dataTrain[, localFriendsTransformed:=ifelse(localFriends==-1, "-99999", 
@@ -141,8 +142,8 @@ province_binningDF <- data.table(c("甘肃省",
                                               4))
 names(province_binningDF) <- c("maxvalue","provinceTransformedBin")
 dataTrainTH<-merge(dataTrainTH, province_binningDF, by.x="provinceTransformed", by.y="maxvalue", all.x = T)
-
 dataTrainTH[, provinceTransformedBin:=as.factor(provinceTransformedBin)]
+
 provinceTransformed_list<-woeCalc(dataTrainTH, "provinceTransformedBin","flgDPD")
 dataTrainTH <- provinceTransformed_list$resultDT
 assigningDF <- rbind(assigningDF, provinceTransformed_list$woeVar)
@@ -154,7 +155,7 @@ binTrain<-dataTrainTH[, c("rowID","w_RFM_6_var12","w_RFM_6_var19","w_applyTimeSe
                 "w_avgMonthCall",
                 "w_provinceTransformedBin","flgDPD"), with=F]
 rawTrain<-dataTrainTH[, c("rowID","RFM_6_var19","RFM_6_var12","applyTimeSegment","consumeFreg","longTimeShutdown","unionpayPosConsumeCityRank", "zhimaScore",
-          "avgMonthCall","flgDPD","provinceTransformedBin","modelScore"), with=F]
+          "avgMonthCall","flgDPD","provinceTransformedBin","modelScore","financingprojectid"), with=F]
 
 
 allDataBin <- copy(binTrain)
@@ -168,7 +169,7 @@ train <- allDataBin[bucket %in% c(1,2,3,4),]
 test <- allDataBin[bucket == 5,]
 
 
-train[, bucket:=NULL]
+train[, c("rowID","bucket"):=NULL]
 mfull<-glm(flgDPD~., data=train, family=binomial())
 
 summary(mfull)

@@ -1,9 +1,10 @@
 ggImpute(oos, fullImpute = F, removeMassiveMissing = F)
-featureAnalysis(oos, exclude = "service_id")
+featureAnalysis(oos, exclude = c("service_id", "longTimeShutdown"))
 
 
 scoreCard<-read.csv(paste0(boxdata, "scoreCard.csv"))
 scoreCard<-data.table(scoreCard)
+scoreCard[maxValue==-100000, maxValue:=-99999]
 oos<-data.table(oos)
 
 scoreCard[, X:=NULL]

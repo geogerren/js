@@ -38,7 +38,7 @@ tvardict<-ruleq("select
                 ")
 ########################################################################################
 # t_mod_score
-# featureGen(features, 10014, '1000031.0', "modelScore")
+featureGen(features, 10014, '1000031.0', "modelScore")
 
 featureGen(features, 10008, 1000012, "zhimaScore")
 featureGen(features, 10010, 1000018, "avgMonthCall")
