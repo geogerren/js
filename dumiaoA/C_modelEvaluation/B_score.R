@@ -17,7 +17,7 @@ scoredOOS[, scoreBand:=ifelse(s_totalScore<466, 1,
                                       ifelse(s_totalScore<583, 3, 
                                              ifelse(s_totalScore<637, 4, 5))))]
 
-
+View(scoredOOS)
 View(scoredOOS[, .("cnt"=.N),by=c("scoreBand")])
 
 write.csv(scoredOOS, paste0(boxdata, "scoredOOS.csv"))
