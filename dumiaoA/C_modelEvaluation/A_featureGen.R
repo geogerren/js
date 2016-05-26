@@ -31,6 +31,7 @@ cities[, applyid:=as.character(applyid)]
 applyidMapping <- ruleq("select id as service_id, ser_rec_id as applyid
                         from t_cust_ser")
 
+financingprojectidMapping <- ruleq("select financingprojectid, service_id, apply_id from project_detail")
 
 tvardict<-ruleq("select 
       td.applyid
